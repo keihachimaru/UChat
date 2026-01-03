@@ -1,23 +1,23 @@
-export interface Chat = {
+export type Chat = {
     id: number;
     name: string;
     messageIds: number[];
     documentIds: number[];
 }
 
-export interface Rag = {
+export type Rag = {
     source: string;
     chunkIds: number[];
     vectorIds: number[];
 }
 
-export interface Vector = {
+export type Vector = {
     id: number;
     value: number;
     chunkId: number;
 }
 
-export interface Chunk = {
+export type Chunk = {
     id: number;
     text: string;
     position: string;
@@ -25,28 +25,29 @@ export interface Chunk = {
     tags: string[];
 }
 
-export interface Document = {
+export type Document = {
     id: number;
     source: string;
 }
 
-export interface Model = {
+export type Model = {
     name: string;
-    apiKey: string;
-    endpoint: string;
+    key: string | null;
+    logo: string;
+    color: string;
 }
 
-export interface Message = {
+export type Message = {
     id: number;
     reply: boolean;
     content: string;
     model?: string;
-    author?: number;
+    author?: number | null;
     pinned: boolean;
     timestamp: string;
 }
 
-export interface Profile = {
+export type Profile = {
     id: number;
     name: string;
     color: string;

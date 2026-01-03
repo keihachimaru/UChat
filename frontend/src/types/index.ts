@@ -1,2 +1,2 @@
-export * from './uiTypes';
 export * from './serviceTypes';
+export * from './uiTypes';

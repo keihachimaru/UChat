@@ -1,8 +1,9 @@
 import deepseek from '../assets/deepseek.png';
 import gemini from '../assets/gemini.png';
+import type { Model } from '../types/uiTypes';
 
-export const aiModels = ["deepseek", "gemini"];
-export const modelDetails = {
+export const aiModels : string[] = ["deepseek", "gemini"];
+export const modelDetails : { [key: string]: Model } = {
     "deepseek" : {
         name: "deepseek",
         color: '#4D6BFE',

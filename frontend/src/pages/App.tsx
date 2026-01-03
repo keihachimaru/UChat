@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, type MouseEvent } from 'react'
 import { 
   MdClose, MdOutlineMoreHoriz, MdAdd,
   MdEdit,
@@ -12,14 +12,11 @@ import {
 import { BsLayoutSidebar, BsLayoutSidebarReverse } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
 import '../styles/App.css'
-import { 
-    Chat, Message, Profile,
-    DeepSeekRequest, DeepSeekResponse,
-    ModelDetails
-} from '@/types';
+import type {
+    Chat, Message, Model, Profile, Rag
+} from '../types/index.ts';
 import { generateID, createChat, capitalize, randomHex } from '../utils/general.ts';
 import { aiModels, modelDetails } from '../constants/models.ts';
-import { colors } from '../constants/colors.ts';
 import { sendMessageToAI } from '../services/aiServices.ts';
 import ReactMarkdown from 'react-markdown';
 
@@ -27,7 +24,6 @@ function App() {
   // Global data
   const [chats, setChats] = useState<Chat[]>([
   ]);
-  const [models, setModels] = useState<Model[]>(aiModels);
   const [messages, setMessages] = useState<Message[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
@@ -38,7 +34,7 @@ function App() {
   const [editingChatName, setEditingChatName] = useState<number>(0);
   const [chatMenuId, setChatMenuId] = useState<number>(0);
   const [ editingProfile, setEditingProfile] = useState<number | null>(null);
-  const [modelsDetails, setModelsDetails] = useState(aiModels.map(m=>modelDetails[m]));
+  const [modelsDetails, setModelsDetails] = useState<Model[]>(aiModels.map(m=>modelDetails[m]));
   
   // Utils
   const [sidebar, setSidebar] = useState<boolean>(true);
@@ -49,10 +45,10 @@ function App() {
   const [settings, setSettings] = useState<boolean>(false);
 
   // Refs
-  const menuRef = useRef(null);
+  const menuRef = useRef<any>(null);
 
   // Functions
-  function closeTab(event, id: number) {
+  function closeTab(event: MouseEvent | null, id: number) {
       if(event) event.stopPropagation();
       let index = tabs.indexOf(id)
       if(tabs[index+1]) setActiveChat(tabs[index+1])
@@ -63,8 +59,7 @@ function App() {
   }
   function newChat(
     chatName?: string,
-  ) {
-      const num = chats.filter(c=>c.name.startsWith('New chat')).length
+  ) { const num = chats.filter(c=>c.name.startsWith('New chat')).length
       const newChat = createChat(
         chatName?chatName:('New chat'+(num>0?' '+num:''))
       );
@@ -92,7 +87,6 @@ function App() {
         )
     )
     setThinking(true);
-    const oldMessages = chatsById[activeChat].messageIds.map( m => messagesById[m])
     triggerAIReply([message], selectedModel);
   }
   function handleStreamChunk(chunk: string, replyId: number) {
@@ -118,16 +112,16 @@ function App() {
       }
   }
 
-  async function triggerAIReply(messagesArray: Message[], model) {
+  async function triggerAIReply(messagesArray: Message[], model: string) {
     const conversation = messagesArray.map(m => ({
         "role": m.reply?"system":"user",
         "content": m.content
     }))
-    const temperature = profilesById[activeProfile].temperature 
-    const maxTokens = profilesById[activeProfile].maxTokens
-    const stream = profilesById[activeProfile].stream
+    const temperature = profilesById[activeProfile!].temperature 
+    const maxTokens = profilesById[activeProfile!].maxTokens
+    const stream = profilesById[activeProfile!].stream
 
-    const context = []
+    const context : Rag | null = null;
     const request = {
         model: model,
         conversation: conversation,
@@ -137,7 +131,7 @@ function App() {
         rag: context
     }
 
-    const key = modelsDetails.find(m => m.name===model).key
+    const key = modelsDetails.find(m => m.name===model)!.key
     if(!key) {
         alert('No key set')
         return
@@ -199,11 +193,12 @@ function App() {
     }
   }
 
-  function showMenu(event, id) {
+  function showMenu(event: MouseEvent, id: number) {
       event.stopPropagation();
       const target = event.currentTarget
       const menu = document.getElementById('chat-menu')
 
+      if(!menu) return;
       if(target === menuRef.current) {
           menuRef.current = null
           menu.classList.remove('visible')
@@ -221,16 +216,19 @@ function App() {
 
   function editChatName() {
       setEditingChatName(chatMenuId)
-      document.getElementById(chatMenuId+'-chat-input').select()
+      const chatInput = document.getElementById(chatMenuId+'-chat-input') as HTMLInputElement;
+      if(!chatInput) return;
+
+      chatInput.select()
 
       const menu = document.getElementById('chat-menu');
+      if(!menu) return;
       menu.classList.remove('visible');
       menuRef.current = null;
       setChatMenuId(0);
   }
 
-  function updateChatName(id, value) {
-      const chat = chatsById[id]
+  function updateChatName(id: number, value: string) {
       setChats(prev => 
         prev.map(c => 
             c.id === id?
@@ -240,7 +238,7 @@ function App() {
       )
   }
 
-  function updateProfileField(id, field, value) {
+  function updateProfileField(id: number, field: string, value: any) {
     setProfiles(prev =>
       prev.map(p =>
         p.id === id
@@ -262,12 +260,13 @@ function App() {
       );
 
       const menu = document.getElementById('chat-menu');
+      if(!menu) return;
       menu.classList.remove('visible');
       menuRef.current = null;
       setChatMenuId(0);
   }
 
-  function deleteProfile(id) {
+  function deleteProfile(id: null | number) {
       if(activeProfile===id) setActiveProfile(null)
       setProfiles(prev => 
         prev.filter(p => p.id!=id)
@@ -298,10 +297,10 @@ function App() {
   }
   function saveKeys() {
       for(const model of aiModels) {
-          localStorage.setItem(model, modelsDetails.find(m => m.name===model).key)
+          localStorage.setItem(model, modelsDetails.find(m => m.name===model)!.key || '')
       }
   }
-  function setKey(model, key) {
+  function setKey(model: string, key: string) {
       setModelsDetails(prev =>
         prev.map(m =>
             m.name===model?
@@ -348,7 +347,7 @@ function App() {
     if(contents) {
         contents.scrollTo({
             top: contents.scrollHeight,
-            behaviour: 'smooth', });
+            behavior: 'smooth', });
     }
   }, [messages, thinking])
 
@@ -371,7 +370,9 @@ function App() {
   );
 
   // Event listeners
-  document.addEventListener('mouseup', (e) => { 
+  document.addEventListener('mouseup', (e) => {
+    if(!e.target) return;
+
     const menu = document.getElementById('chat-menu');
     if(menu  && menuRef.current) {
         if (
@@ -384,10 +385,10 @@ function App() {
             setChatMenuId(0);
         }
     }
-    if(editingProfile && e.target.classList.contains('overlay')) {
+    if(editingProfile && (e.target as HTMLDivElement).classList.contains('overlay')) {
         setEditingProfile(null);
     }
-    if(settings && e.target.classList.contains('overlay')) {
+    if(settings && (e.target as HTMLDivElement).classList.contains('overlay')) {
         setSettings(false);
     }
   })
@@ -461,7 +462,7 @@ function App() {
                                 "active":""
                             ].join(" ")}
                             key={c.id}
-                            onClick={(e) => c.id==activeChat?setActiveChat(null):setActiveChat(c.id)}
+                            onClick={() => c.id==activeChat?setActiveChat(null):setActiveChat(c.id)}
                         >
                             <div>
                                 <input
@@ -506,12 +507,12 @@ function App() {
                                 "active":""
                             ].join(" ")}
                             key={t}
-                            onClick={(e) => t==activeChat?setActiveChat(null):setActiveChat(t)}
+                            onClick={() => t==activeChat?setActiveChat(null):setActiveChat(t)}
                         >
                             <div
                                 className="tabName"
                             >
-                                { chats.find(c => c.id===t).name }
+                                { chats.find(c => c.id===t)?.name }
                             </div>
                             <button
                                 className="close"
@@ -687,7 +688,7 @@ function App() {
                         >
                             {
                                 chatsById[activeChat].messageIds.map(id => {
-                                    const m = messagesById[id]
+                                    const m : Message = messagesById[id]
                                     return (
                                         <div
                                             key={m.id}
@@ -699,10 +700,10 @@ function App() {
                                             <div
                                                 className="messageTopbar"
                                                 style={{
-                                                    'color': m.reply?modelDetails[m.model].color:profilesById[m.author]?.color
+                                                    'color': m.reply?modelDetails[m.model!].color:profilesById[m.author!]?.color
                                                 }}
                                             >
-                                                { m.reply?capitalize(m.model):profilesById[m.author].name }
+                                                { m.reply?capitalize(m.model):profilesById[m.author!].name }
                                                 <button
                                                     className="message-menu"
                                                 >
