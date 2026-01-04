@@ -54,5 +54,6 @@ export type Profile = {
     temperature: number;
     stream: boolean;
     maxTokens?: number;
+    autoReply: boolean;
 }
 

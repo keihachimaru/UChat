@@ -360,7 +360,7 @@
 }
 
 .message {
-    background: #111;
+    background: #151515;
     border-radius: 10px;
     width: fit-content;
     text-align: left;
@@ -745,6 +745,7 @@
     max-height: calc(fit-content);
     aspect-ratio: 1;
     align-items: center;
+    z-index: 10;
 }
 .settings .title {
     height: 50px;
@@ -832,6 +833,23 @@
     opacity: .3;
 }
 
+.reply {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: opacity .2s;
+}
+.reply:hover {
+    background: #444;
+}
 
 .close {
     height: 20px;

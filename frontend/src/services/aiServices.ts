@@ -34,7 +34,7 @@ export async function fetchDeepSeek(
   request: DeepSeekRequest,
   token: string
 ): Promise<DeepSeekResponse> {
-  console.log('Request body is : '+JSON.stringify(request))
+
   const response = await fetch(
     'https://api.deepseek.com/chat/completions',
     {
@@ -85,7 +85,6 @@ export async function handleGemini(request, apiKey) {
 }
 
 export async function fetchGeminiAPI(request, apiKey) {
-  console.log("Gemini request body:", JSON.stringify(request));
 
   const response = await fetch(
     "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
