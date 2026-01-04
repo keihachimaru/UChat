@@ -46,6 +46,7 @@ function App() {
     const [messageValue, setMessageValue] = useState('');
     const [thinking, setThinking] = useState<boolean>(false);
     const [settings, setSettings] = useState<boolean>(false);
+    const [replying, setReplying] = useState<[Message, Profile|Model] | null>(null);
 
     // Refs
     const chatMenuRef = useRef<any>(null);
@@ -78,13 +79,15 @@ function App() {
     ) {
         const message: Message = {
             id: generateID(),
-            reply: null,
+            reply: replying ? replying[0].id : null,
             system: false,
             author: activeProfile,
             content: content,
             pinned: false,
             timestamp: new Date().toString(),
         }
+
+        if(replying) setReplying(null)
 
         setMessages(prev => [...prev, message]);
         setChats(prev =>
@@ -353,6 +356,27 @@ function App() {
 
     }
 
+    function replyTo() {
+        const message = messagesById[messageMenuId];
+        const author = message.system ? modelDetails[message.model!] : profilesById[message.author!]
+        setReplying([message, author]);
+
+        document.getElementById("chat-input")?.focus()
+
+        const menu = document.getElementById('message-menu');
+        if (!menu) return;
+        menu.classList.remove('visible');
+        messageMenuRef.current = null;
+        setMessageMenuId(0);
+    }
+
+    function getAuthor(id: number) {
+        const message =  messagesById[id];
+        const author = message.system ? modelDetails[message.model!] : profilesById[message.author!]
+        
+        return author
+    }
+
     // Hooks
     useEffect(() => {
         if (profiles.length === 0) {
@@ -586,17 +610,17 @@ function App() {
                     className="chat-frame"
                 >
                     <div id="message-menu">
-                        <div className="option">
+                        <div className="option" onClick={() => replyTo()}>
                             <MdReply size={20} color="#ffffff" />
                             Reply 
                         </div>
 
-                        <div className="option">
+                        <div className="option disabled">
                             <MdEdit size={20} color="#ffffff" />
                             Edit 
                         </div>
 
-                        <div className="option">
+                        <div className="option disabled">
                             <MdPushPin size={20} color="#ffffff" />
                             Pin
                         </div>
@@ -811,6 +835,33 @@ function App() {
                                                         <MdChevronRight size={20} color="white" />
                                                     </button>
                                                 </div>
+                                                { m.reply && <div className="messageReplybar"
+                                                >
+                                                    <div 
+                                                        className="message"
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                'backgroundColor': getAuthor(m.reply).color
+                                                            }}
+                                                            className="quote"
+                                                        >
+                                                        </div>
+                                                        <div
+                                                            className="messageTopbar"
+                                                            style={{
+                                                                'color' : getAuthor(m.reply).color
+                                                            }}
+                                                        >
+                                                            { getAuthor(m.reply).name }
+                                                        </div>
+                                                        <div
+                                                            className="messageContents"
+                                                        >
+                                                            { messagesById[m.reply].content }
+                                                        </div>
+                                                    </div>
+                                                </div>}
                                                 <div
                                                     className="messageContents"
                                                 >
@@ -841,26 +892,66 @@ function App() {
                             </div>
                             <div
                                 className="input"
-                            >
-                                <input
-                                    id="chat-input"
-                                    placeholder="Ask something ..."
-                                    autoFocus
-                                    value={messageValue}
-                                    onChange={e => setMessageValue(e.target.value)}
-                                    onKeyDown={e => {
-                                        if (e.key === 'Enter' && messageValue.trim()) {
-                                            sendMessage(messageValue);
-                                            setMessageValue('');
-                                        }
-                                    }}
-                                />
-                                <button
-                                    className="reply"
-                                    onClick={() => triggerAIReply()}
-                                >
-                                    <MdSend size={24} color="fff" />
-                                </button>
+                            >   
+                                <div className="upper">
+                                    {
+                                        replying && (
+                                            <>
+                                                <div
+                                                    style={{
+                                                        'backgroundColor': replying[1].color
+                                                    }}
+                                                    className="quote"
+                                                >
+                                                </div>
+                                                <div 
+                                                    className="message"
+                                                >
+                                                    <div
+                                                        className="messageTopbar"
+                                                        style={{
+                                                            'color' : replying[1].color
+                                                        }}
+                                                    >
+                                                        { replying[1].name }
+                                                        <button
+                                                            className="message-menu"
+                                                            onClick={(e) => setReplying(null)}
+                                                        >
+                                                            <MdClose size={20} color="white" />
+                                                        </button>
+                                                    </div>
+                                                    <div
+                                                        className="messageContents"
+                                                    >
+                                                        { replying[0].content }
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )
+                                    }
+                                </div>
+                                <div className="lower">
+                                    <input
+                                        id="chat-input"
+                                        placeholder="Ask something ..."
+                                        autoFocus
+                                        value={messageValue}
+                                        onChange={e => setMessageValue(e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter' && messageValue.trim()) {
+                                                sendMessage(messageValue);
+                                                setMessageValue('');
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        className="reply"
+                                        onClick={() => triggerAIReply()}
+                                    >
+                                        <MdSend size={24} color="fff" />
+                                    </button>
+                                </div>
                             </div>
                         </>
                     }
