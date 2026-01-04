@@ -39,12 +39,13 @@ export type Model = {
 
 export type Message = {
     id: number;
-    reply: boolean;
+    system: boolean;
     content: string;
     model?: string;
     author?: number | null;
     pinned: boolean;
     timestamp: string;
+    reply: number | null;
 }
 
 export type Profile = {

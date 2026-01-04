@@ -803,6 +803,7 @@
     padding: 5px;
     display: none;
     background: #222;
+    border: 1px solid #333;
 }
 #chat-menu.visible{
     display: flex;
@@ -831,6 +832,22 @@
 }
 .disabled {
     opacity: .3;
+}
+
+#message-menu {
+    position: absolute;
+    background: transparent;
+    border-radius: 10px;
+    display: none;
+    padding: 5px;
+    display: none;
+    background: #222;
+    border: 1px solid #333;
+}
+#message-menu.visible{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .reply {
