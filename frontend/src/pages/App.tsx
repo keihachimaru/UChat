@@ -415,6 +415,21 @@ function App() {
         setEditingMessage(null)
     }
 
+    function pinMessage() {
+        setMessages(prev =>
+            prev.map(m =>
+                m.id === messageMenuId?
+                { ...m, pinned: !m.pinned}
+                : m
+            )
+        )
+        const menu = document.getElementById('message-menu');
+        if (!menu) return;
+        menu.classList.remove('visible');
+        messageMenuRef.current = null;
+        setMessageMenuId(0);
+    }
+
     // Hooks
     useEffect(() => {
         if (profiles.length === 0) {
@@ -672,10 +687,21 @@ function App() {
                             Edit 
                         </div>
 
-                        <div className="option disabled">
-                            <MdPushPin size={20} color="#ffffff" />
-                            Pin
-                        </div>
+                        {
+                            messagesById[messageMenuId]?.pinned ?
+                            (<div 
+                                className="option" 
+                                style={{ color: '#ea4335', fontWeight: 'bold' }}
+                                onClick={() => pinMessage()}
+                            >
+                                <MdPushPin size={20} color="#ea4335" />
+                                Unpin
+                            </div>)
+                            :(<div className="option" onClick={() => pinMessage()}>
+                                <MdPushPin size={20} color="#ffffff" />
+                                Pin
+                            </div>)
+                        }
 
                         <div
                             className="option"
@@ -870,7 +896,8 @@ function App() {
                                                 key={m.id}
                                                 className={[
                                                     "message",
-                                                    m.system || m.author != activeProfile ? "left" : "right"
+                                                    m.system || m.author != activeProfile ? "left" : "right",
+                                                    m.pinned? "pinned" : ""
                                                 ].join(" ")}
                                             >
                                                 <div

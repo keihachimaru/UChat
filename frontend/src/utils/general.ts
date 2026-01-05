@@ -19,9 +19,9 @@ export function capitalize(val: string) {
 }
 export function randomHex() {
     // Generate each color channel separately (0 to 100)
-    const r = Math.floor(Math.random() * 200);
-    const g = Math.floor(Math.random() * 200);
-    const b = Math.floor(Math.random() * 200);
+    const r = Math.floor(80+Math.random() * 120);
+    const g = Math.floor(80+Math.random() * 120);
+    const b = Math.floor(80+Math.random() * 120);
 
     // Convert to hex and pad with zeros if needed
     const hex = (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
