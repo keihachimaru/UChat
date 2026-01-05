@@ -370,6 +370,7 @@
     overflow: hidden;
     flex-shrink: 0;
     max-width: 80%;
+    min-height: 0;
 }
 .message .message {
     background: #222;
@@ -399,15 +400,53 @@
     justify-content: space-between;
 }
 .messageContents {
-    padding: 0 15px 0px 15px;
-}
-.messageContents {
+  padding: 0 15px 0px 15px;
   font-size: 0.95rem;
   line-height: 1.65;
   color: #e5e7eb;
   word-wrap: break-word;
+  min-height: 0;
 }
-
+.messageContents textarea {
+    outline: none;
+    background: none;
+    border: none;
+    resize: none;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    background: #252525;
+    border-radius: 5px;
+    flex-shrink: 0;
+    overflow: hidden;
+    height: auto;
+    field-sizing: content;
+    padding: 0;
+    box-sizing: border-box;
+    min-width: 100%;
+    max-width: 100%;
+    font-size: 1em;
+    line-height: 1.65;
+}
+.messageContents .buttonBar {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    justify-content: flex-end;
+}
+.messageContents button {
+    height: 24px;
+    width: 60px;
+    border-radius: 8px;
+    border: none;
+    background: none;
+    font-size: .8em;
+    cursor: pointer;
+    filter: brightness(.8);
+}
+.messageContents button:hover {
+    filter: brightness(1);
+}
 /* ---------------- Headings ---------------- */
 
 .messageContents h1 {

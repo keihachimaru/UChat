@@ -11,6 +11,7 @@ import {
     MdSend,
     MdReply
 } from 'react-icons/md';
+import { IoMdShareAlt } from "react-icons/io";
 import { BsLayoutSidebar, BsLayoutSidebarReverse } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
 import '../styles/App.css'
@@ -38,6 +39,7 @@ function App() {
     const [messageMenuId, setMessageMenuId] = useState<number>(0);
     const [editingProfile, setEditingProfile] = useState<number | null>(null);
     const [modelsDetails, setModelsDetails] = useState<Model[]>(aiModels.map(m => modelDetails[m]));
+    const [editingMessage, setEditingMessage] = useState<number | null>(null);
 
     // Utils
     const [sidebar, setSidebar] = useState<boolean>(true);
@@ -377,6 +379,42 @@ function App() {
         return author
     }
 
+    function forward() {
+        console.log("Forward")
+    }
+
+    function editMessage() {
+        setEditingMessage(messageMenuId)
+
+        const menu = document.getElementById('message-menu');
+        if (!menu) return;
+        menu.classList.remove('visible');
+        messageMenuRef.current = null;
+        setMessageMenuId(0);
+    }
+
+    function autoResize(textarea: HTMLTextAreaElement) {
+      // Reset so shrinking works
+      textarea.style.height = "auto";
+      textarea.style.width = "auto";
+
+      // Grow to fit content
+      textarea.style.height = textarea.scrollHeight + "px";
+      textarea.style.width = textarea.scrollWidth + "px";
+    }
+
+    function saveEditedMessage() {
+        const contents = (document.getElementById("message-"+editingMessage) as HTMLInputElement).value
+        setMessages(prev =>
+            prev.map( m  =>
+                m.id === editingMessage ?
+                { ...m, content: contents }
+                : m
+            )
+        )
+        setEditingMessage(null)
+    }
+
     // Hooks
     useEffect(() => {
         if (profiles.length === 0) {
@@ -421,7 +459,16 @@ function App() {
     }, [messages, thinking])
 
     useEffect(() => {
-    }, [profiles])
+        if(editingMessage) {
+            const el = document.getElementById("message-"+editingMessage) as HTMLTextAreaElement 
+            if(!el) return
+            autoResize(el)
+            el.focus()
+            const pos = el.value.length
+            el.setSelectionRange(pos, pos)
+
+        } 
+    }, [editingMessage])
 
     const messagesById = useMemo(
         () => Object.fromEntries(messages.map(m => [m.id, m])),
@@ -615,7 +662,12 @@ function App() {
                             Reply 
                         </div>
 
-                        <div className="option disabled">
+                        <div className="option disabled" onClick={() => forward()}>
+                            <IoMdShareAlt size={20} color="#ffffff" />
+                            Forward
+                        </div>
+
+                        <div className="option" onClick={() => editMessage()}>
                             <MdEdit size={20} color="#ffffff" />
                             Edit 
                         </div>
@@ -865,9 +917,38 @@ function App() {
                                                 <div
                                                     className="messageContents"
                                                 >
-                                                    <ReactMarkdown>
-                                                        {m.content}
-                                                    </ReactMarkdown>
+                                                    { editingMessage === m.id ?
+                                                        (
+                                                            <>
+                                                                <textarea
+                                                                 id={"message-"+m.id}
+                                                                 defaultValue={m.content}
+                                                                 onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
+                                                                 spellCheck="false"
+                                                                >
+                                                                </textarea>
+                                                                <div
+                                                                    className="buttonBar"
+                                                                >
+                                                                    <button
+                                                                        style={{ background: '#EA4335' }}
+                                                                        onClick={() => setEditingMessage(null)}
+                                                                    >
+                                                                        Cancel
+                                                                    </button>
+                                                                    <button
+                                                                        style={{ background: '#34A853' }}
+                                                                        onClick={() => saveEditedMessage()}
+                                                                    >
+                                                                        Confirm
+                                                                    </button>
+                                                                </div>
+                                                            </>
+                                                        )
+                                                        :(<ReactMarkdown>
+                                                            {m.content}
+                                                        </ReactMarkdown>)
+                                                    }
                                                 </div>
                                                 <div
                                                     className="messageMetadata"
