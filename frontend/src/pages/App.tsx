@@ -40,6 +40,8 @@ function App() {
     const [editingProfile, setEditingProfile] = useState<number | null>(null);
     const [modelsDetails, setModelsDetails] = useState<Model[]>(aiModels.map(m => modelDetails[m]));
     const [editingMessage, setEditingMessage] = useState<number | null>(null);
+    const [forwardMenu, setForwardMenu] = useState<boolean>(false);
+    const [forwardTo, setForwardTo] = useState<number[]>([]);
 
     // Utils
     const [sidebar, setSidebar] = useState<boolean>(true);
@@ -49,6 +51,7 @@ function App() {
     const [thinking, setThinking] = useState<boolean>(false);
     const [settings, setSettings] = useState<boolean>(false);
     const [replying, setReplying] = useState<[Message, Profile|Model] | null>(null);
+    const [forwarding, setForwarding] = useState<number[] | null>(null);
 
     // Refs
     const chatMenuRef = useRef<any>(null);
@@ -380,7 +383,51 @@ function App() {
     }
 
     function forward() {
-        console.log("Forward")
+        setForwarding([messageMenuId])
+
+        const menu = document.getElementById('message-menu');
+        if (!menu) return;
+        menu.classList.remove('visible');
+        messageMenuRef.current = null;
+        setMessageMenuId(0);
+    }
+
+    function changeForwarding(id: number) {
+        if(!forwarding) return
+        if(forwarding.includes(id)) {
+            setForwarding(prev => prev!.filter(f => f!==id))
+        }
+        else {
+            setForwarding([...forwarding, id])
+        }
+    }
+
+    function changeForwardTo(id: number) {
+        if(forwardTo.includes(id)) {
+            setForwardTo(prev => prev!.filter(f => f!==id))
+        }
+        else {
+            setForwardTo([...forwardTo, id])
+        }
+    }
+    function forwardMessages(check: boolean) {
+        if(check) {
+            setChats(prev =>
+                prev.map(c =>
+                    forwardTo.includes(c.id)
+                    ? {...c, messageIds: [... new Set([...c.messageIds, ...forwarding!])]}
+                    : c
+                )
+            )
+            setTabs([... new Set([...tabs, ...forwardTo])])
+            setActiveChat(tabs[tabs.length-1])
+            setForwardTo([])
+            setForwarding(null)
+        }
+        else {
+            setForwarding(null);
+        }
+        setForwardMenu(false);
     }
 
     function editMessage() {
@@ -677,7 +724,7 @@ function App() {
                             Reply 
                         </div>
 
-                        <div className="option disabled" onClick={() => forward()}>
+                        <div className="option" onClick={() => forward()}>
                             <IoMdShareAlt size={20} color="#ffffff" />
                             Forward
                         </div>
@@ -712,6 +759,58 @@ function App() {
                             Delete
                         </div>
                     </div>
+
+                    {forwardMenu &&
+                        <div
+                            className="overlay"
+                        >
+                            <div
+                                className="forward-menu"
+                            >
+                                <div
+                                    className="title"
+                                >
+                                    Forward to
+                                </div>
+                                <br></br>
+                                <div
+                                    className="forward-chats-container"
+                                >
+                                    {
+                                        chats.map(c =>
+                                            <div
+                                                className="forward-chat"
+                                            >
+                                                { c.name }
+                                                <input
+                                                    className="forwardTick"
+                                                    type="checkbox"
+                                                    checked={forwardTo.includes(c.id)}
+                                                    onChange={()=>changeForwardTo(c.id)}
+                                                ></input>
+                                            </div>
+                                        )
+                                    }
+                                </div>
+                                <div
+                                    className="button-row"
+                                >
+                                    <button
+                                        className="save-solid"
+                                        onClick={() => forwardMessages(true)}
+                                    >
+                                        Save
+                                    </button>
+                                    <button
+                                        className="close-solid"
+                                        onClick={() => forwardMessages(false)}
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
 
                     {settings &&
                         <div
@@ -892,99 +991,107 @@ function App() {
                                     chatsById[activeChat].messageIds.map(id => {
                                         const m: Message = messagesById[id]
                                         return (
-                                            <div
-                                                key={m.id}
-                                                className={[
-                                                    "message",
-                                                    m.system || m.author != activeProfile ? "left" : "right",
-                                                    m.pinned? "pinned" : ""
-                                                ].join(" ")}
-                                            >
+                                            <div className="message-row" key={id}>
                                                 <div
-                                                    className="messageTopbar"
-                                                    style={{
-                                                        'color': m.system ? modelDetails[m.model!].color : profilesById[m.author!]?.color
-                                                    }}
+                                                    className={[
+                                                        "message",
+                                                        m.system || m.author != activeProfile ? "left" : "right",
+                                                        m.pinned? "pinned" : ""
+                                                    ].join(" ")}
                                                 >
-                                                    {m.system ? capitalize(m.model || 'no model') : profilesById[m.author!].name}
-                                                    <button
-                                                        className="message-menu"
-                                                        onClick={(e) => showMessageMenu(e, m.id)}
+                                                    <div
+                                                        className="messageTopbar"
+                                                        style={{
+                                                            'color': m.system ? modelDetails[m.model!].color : profilesById[m.author!]?.color
+                                                        }}
                                                     >
-                                                        <MdChevronRight size={20} color="white" />
-                                                    </button>
-                                                </div>
-                                                { m.reply && <div className="messageReplybar"
-                                                >
-                                                    <div 
-                                                        className="message"
-                                                    >
-                                                        <div
-                                                            style={{
-                                                                'backgroundColor': getAuthor(m.reply).color
-                                                            }}
-                                                            className="quote"
+                                                        {m.system ? capitalize(m.model || 'no model') : profilesById[m.author!].name}
+                                                        <button
+                                                            className="message-menu"
+                                                            onClick={(e) => showMessageMenu(e, m.id)}
                                                         >
-                                                        </div>
-                                                        <div
-                                                            className="messageTopbar"
-                                                            style={{
-                                                                'color' : getAuthor(m.reply).color
-                                                            }}
-                                                        >
-                                                            { getAuthor(m.reply).name }
-                                                        </div>
-                                                        <div
-                                                            className="messageContents"
-                                                        >
-                                                            { messagesById[m.reply].content }
-                                                        </div>
+                                                            <MdChevronRight size={20} color="white" />
+                                                        </button>
                                                     </div>
-                                                </div>}
-                                                <div
-                                                    className="messageContents"
-                                                >
-                                                    { editingMessage === m.id ?
-                                                        (
-                                                            <>
-                                                                <textarea
-                                                                 id={"message-"+m.id}
-                                                                 defaultValue={m.content}
-                                                                 onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
-                                                                 spellCheck="false"
-                                                                >
-                                                                </textarea>
-                                                                <div
-                                                                    className="buttonBar"
-                                                                >
-                                                                    <button
-                                                                        style={{ background: '#EA4335' }}
-                                                                        onClick={() => setEditingMessage(null)}
+                                                    { m.reply && <div className="messageReplybar"
+                                                    >
+                                                        <div 
+                                                            className="message"
+                                                        >
+                                                            <div
+                                                                style={{
+                                                                    'backgroundColor': getAuthor(m.reply).color
+                                                                }}
+                                                                className="quote"
+                                                            >
+                                                            </div>
+                                                            <div
+                                                                className="messageTopbar"
+                                                                style={{
+                                                                    'color' : getAuthor(m.reply).color
+                                                                }}
+                                                            >
+                                                                { getAuthor(m.reply).name }
+                                                            </div>
+                                                            <div
+                                                                className="messageContents"
+                                                            >
+                                                                { messagesById[m.reply].content }
+                                                            </div>
+                                                        </div>
+                                                    </div>}
+                                                    <div
+                                                        className="messageContents"
+                                                    >
+                                                        { editingMessage === m.id ?
+                                                            (
+                                                                <>
+                                                                    <textarea
+                                                                     id={"message-"+m.id}
+                                                                     defaultValue={m.content}
+                                                                     onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
+                                                                     spellCheck="false"
                                                                     >
-                                                                        Cancel
-                                                                    </button>
-                                                                    <button
-                                                                        style={{ background: '#34A853' }}
-                                                                        onClick={() => saveEditedMessage()}
+                                                                    </textarea>
+                                                                    <div
+                                                                        className="buttonBar"
                                                                     >
-                                                                        Confirm
-                                                                    </button>
-                                                                </div>
-                                                            </>
-                                                        )
-                                                        :(<ReactMarkdown>
-                                                            {m.content}
-                                                        </ReactMarkdown>)
-                                                    }
+                                                                        <button
+                                                                            style={{ background: '#EA4335' }}
+                                                                            onClick={() => setEditingMessage(null)}
+                                                                        >
+                                                                            Cancel
+                                                                        </button>
+                                                                        <button
+                                                                            style={{ background: '#34A853' }}
+                                                                            onClick={() => saveEditedMessage()}
+                                                                        >
+                                                                            Confirm
+                                                                        </button>
+                                                                    </div>
+                                                                </>
+                                                            )
+                                                            :(<ReactMarkdown>
+                                                                {m.content}
+                                                            </ReactMarkdown>)
+                                                        }
+                                                    </div>
+                                                    <div
+                                                        className="messageMetadata"
+                                                    >
+                                                        {new Date(m.timestamp).getHours().toString().padStart(2, '0')
+                                                            + ':' +
+                                                            new Date(m.timestamp).getMinutes().toString().padStart(2, '0')
+                                                        }
+                                                    </div>
                                                 </div>
-                                                <div
-                                                    className="messageMetadata"
-                                                >
-                                                    {new Date(m.timestamp).getHours().toString().padStart(2, '0')
-                                                        + ':' +
-                                                        new Date(m.timestamp).getMinutes().toString().padStart(2, '0')
-                                                    }
-                                                </div>
+                                                {forwarding &&
+                                                <input
+                                                    className="forwardTick"
+                                                    type="checkbox"
+                                                    checked={forwarding.includes(m.id)}
+                                                    onChange={(e)=>changeForwarding(m.id)}
+                                                ></input>}
                                             </div>
                                         )
                                     })
@@ -1039,27 +1146,45 @@ function App() {
                                         )
                                     }
                                 </div>
-                                <div className="lower">
-                                    <input
-                                        id="chat-input"
-                                        placeholder="Ask something ..."
-                                        autoFocus
-                                        value={messageValue}
-                                        onChange={e => setMessageValue(e.target.value)}
-                                        onKeyDown={e => {
-                                            if (e.key === 'Enter' && messageValue.trim()) {
-                                                sendMessage(messageValue);
-                                                setMessageValue('');
-                                            }
-                                        }}
-                                    />
-                                    <button
-                                        className="reply"
-                                        onClick={() => triggerAIReply()}
-                                    >
-                                        <MdSend size={24} color="fff" />
-                                    </button>
-                                </div>
+                                {
+                                    forwarding?
+                                    (<div className="forwarding">
+                                        <button
+                                            className="close"
+                                            onClick={() => setForwarding(null)}
+                                        >
+                                            <MdClose size={20} color="white" />
+                                        </button>
+                                        <p>
+                                            { `${forwarding.length} selected` }
+                                        </p>
+                                        <div style={{ flex: 1}}></div>
+                                        <button className="close" onClick={() => setForwardMenu(true)}>
+                                            <IoMdShareAlt size={24} color="#ffffff" />
+                                        </button>
+                                    </div>)
+                                    :(<div className="lower">
+                                        <input
+                                            id="chat-input"
+                                            placeholder="Ask something ..."
+                                            autoFocus
+                                            value={messageValue}
+                                            onChange={e => setMessageValue(e.target.value)}
+                                            onKeyDown={e => {
+                                                if (e.key === 'Enter' && messageValue.trim()) {
+                                                    sendMessage(messageValue);
+                                                    setMessageValue('');
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            className="reply"
+                                            onClick={() => triggerAIReply()}
+                                        >
+                                            <MdSend size={24} color="fff" />
+                                        </button>
+                                    </div>)
+                                }
                             </div>
                         </>
                     }
