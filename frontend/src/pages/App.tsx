@@ -16,17 +16,25 @@ import { BsLayoutSidebar, BsLayoutSidebarReverse } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
 import '../styles/App.css'
 import type {
-    Chat, Message, Model, Profile, Rag
+    Message, Model, Profile, Rag
 } from '../types/index.ts';
 import { generateID, createChat, capitalize, randomHex } from '../utils/general.ts';
 import { aiModels, modelDetails } from '../constants/models.ts';
 import { sendMessageToAI } from '../services/aiServices.ts';
 import ReactMarkdown from 'react-markdown';
 
+import { useChatStore } from '@/stores/chatStores.ts';
+
+
 function App() {
     // Global data
-    const [chats, setChats] = useState<Chat[]>([
-    ]);
+    const chats = useChatStore((s) => s.chats);
+    const setChats = useChatStore((s) => s.setChats)
+    const addMessageToChat = useChatStore((s) => s.addMessageToChat)
+    const updateChatName = useChatStore((s) => s.updateChatName)
+    const deleteChat = useChatStore((s) => s.deleteChat)
+    const forwardMessagesToChats = useChatStore((s) => s.forwardMessagesToChats)
+
     const [messages, setMessages] = useState<Message[]>([]);
     const [profiles, setProfiles] = useState<Profile[]>([]);
 
@@ -95,13 +103,7 @@ function App() {
         if(replying) setReplying(null)
 
         setMessages(prev => [...prev, message]);
-        setChats(prev =>
-            prev.map(c =>
-                c.id === activeChat
-                    ? { ...c, messageIds: [...c.messageIds, message.id] }
-                    : c
-            )
-        )
+        addMessageToChat(activeChat!, message.id)
 
         const profile = profilesById[activeProfile!];
 
@@ -177,13 +179,7 @@ function App() {
                 timestamp: new Date().toString(),
             }
             setMessages(prev => [...prev, reply])
-            setChats(prev =>
-                prev.map(c =>
-                    c.id === activeChat
-                        ? { ...c, messageIds: [...c.messageIds, reply.id] }
-                        : c
-                )
-            )
+            addMessageToChat(activeChat!, reply.id)
             setThinking(false);
 
             let done = false;
@@ -208,13 +204,7 @@ function App() {
             }
 
             setMessages(prev => [...prev, reply])
-            setChats(prev =>
-                prev.map(c =>
-                    c.id === activeChat
-                        ? { ...c, messageIds: [...c.messageIds, reply.id] }
-                        : c
-                )
-            )
+            addMessageToChat(activeChat!, reply.id)
             setThinking(false);
         }
     }
@@ -276,16 +266,6 @@ function App() {
         setChatMenuId(0);
     }
 
-    function updateChatName(id: number, value: string) {
-        setChats(prev =>
-            prev.map(c =>
-                c.id === id ?
-                    { ...c, name: value }
-                    : c
-            )
-        )
-    }
-
     function updateProfileField(id: number, field: string, value: any) {
         setProfiles(prev =>
             prev.map(p =>
@@ -296,16 +276,14 @@ function App() {
         );
     }
 
-    function deleteChat() {
+    function handleDeleteChat() {
         const chat = chatsById[chatMenuId]
 
         closeTab(null, chatMenuId);
         setMessages(prev =>
             prev.filter(m => !chat.messageIds.includes(m.id))
         );
-        setChats(prev =>
-            prev.filter(c => c.id != chatMenuId)
-        );
+        deleteChat(chatMenuId)
 
         const menu = document.getElementById('chat-menu');
         if (!menu) return;
@@ -412,13 +390,7 @@ function App() {
     }
     function forwardMessages(check: boolean) {
         if(check) {
-            setChats(prev =>
-                prev.map(c =>
-                    forwardTo.includes(c.id)
-                    ? {...c, messageIds: [... new Set([...c.messageIds, ...forwarding!])]}
-                    : c
-                )
-            )
+            forwardMessagesToChats(forwardTo, forwarding!)
             setTabs([... new Set([...tabs, ...forwardTo])])
             setActiveChat(tabs[tabs.length-1])
             setForwardTo([])
@@ -618,7 +590,7 @@ function App() {
                     <div
                         className="option"
                         style={{ color: '#ea4335', fontWeight: 'bold' }}
-                        onClick={() => deleteChat()}
+                        onClick={() => handleDeleteChat()}
                     >
                         <MdDeleteOutline size={20} color="#ea4335" />
                         Delete
@@ -753,7 +725,7 @@ function App() {
                         <div
                             className="option"
                             style={{ color: '#ea4335', fontWeight: 'bold' }}
-                            onClick={() => deleteChat()}
+                            onClick={() => handleDeleteChat()}
                         >
                             <MdDeleteOutline size={20} color="#ea4335" />
                             Delete
