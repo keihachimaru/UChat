@@ -24,18 +24,26 @@ import { sendMessageToAI } from '../services/aiServices.ts';
 import ReactMarkdown from 'react-markdown';
 
 import { useChatStore } from '@/stores/chatStores.ts';
+import { useMessageStore } from '@/stores/messageStores.ts';
 
 
 function App() {
-    // Global data
+    // Chat Store
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats)
     const addMessageToChat = useChatStore((s) => s.addMessageToChat)
     const updateChatName = useChatStore((s) => s.updateChatName)
     const deleteChat = useChatStore((s) => s.deleteChat)
     const forwardMessagesToChats = useChatStore((s) => s.forwardMessagesToChats)
-
-    const [messages, setMessages] = useState<Message[]>([]);
+    
+    // Message Store
+    const messages = useMessageStore((s) => s.messages)
+    const setMessages = useMessageStore((s) => s.setMessages)
+    const addMessage = useMessageStore((s) => s.addMessage)
+    const deleteMessages = useMessageStore((s) => s.deleteMessages)
+    const updateMessageContents = useMessageStore((s) => s.updateMessageContents)
+    const pinMessage = useMessageStore((s) => s.pinMessage)
+    
     const [profiles, setProfiles] = useState<Profile[]>([]);
 
     // Local data
@@ -102,7 +110,7 @@ function App() {
 
         if(replying) setReplying(null)
 
-        setMessages(prev => [...prev, message]);
+        addMessage(message);
         addMessageToChat(activeChat!, message.id)
 
         const profile = profilesById[activeProfile!];
@@ -122,14 +130,8 @@ function App() {
             const json = JSON.parse(data);
             const token = json.choices?.[0]?.delta?.content;
             if (!token) continue;
-
-            setMessages(prev =>
-                prev.map(m =>
-                    m.id === replyId
-                        ? { ...m, content: m.content + token }
-                        : m
-                )
-            );
+            
+            updateMessageContents(replyId, token, false)
         }
     }
 
@@ -178,7 +180,7 @@ function App() {
                 pinned: false,
                 timestamp: new Date().toString(),
             }
-            setMessages(prev => [...prev, reply])
+            addMessage(reply)
             addMessageToChat(activeChat!, reply.id)
             setThinking(false);
 
@@ -203,7 +205,7 @@ function App() {
                 timestamp: new Date().toString(),
             }
 
-            setMessages(prev => [...prev, reply])
+            addMessage(reply)
             addMessageToChat(activeChat!, reply.id)
             setThinking(false);
         }
@@ -280,9 +282,7 @@ function App() {
         const chat = chatsById[chatMenuId]
 
         closeTab(null, chatMenuId);
-        setMessages(prev =>
-            prev.filter(m => !chat.messageIds.includes(m.id))
-        );
+        deleteMessages(chat.messageIds)
         deleteChat(chatMenuId)
 
         const menu = document.getElementById('chat-menu');
@@ -424,24 +424,12 @@ function App() {
 
     function saveEditedMessage() {
         const contents = (document.getElementById("message-"+editingMessage) as HTMLInputElement).value
-        setMessages(prev =>
-            prev.map( m  =>
-                m.id === editingMessage ?
-                { ...m, content: contents }
-                : m
-            )
-        )
+        updateMessageContents(editingMessage!, contents, true)
         setEditingMessage(null)
     }
 
-    function pinMessage() {
-        setMessages(prev =>
-            prev.map(m =>
-                m.id === messageMenuId?
-                { ...m, pinned: !m.pinned}
-                : m
-            )
-        )
+    function handlePinMessage() {
+        pinMessage(messageMenuId)
         const menu = document.getElementById('message-menu');
         if (!menu) return;
         menu.classList.remove('visible');
@@ -711,12 +699,12 @@ function App() {
                             (<div 
                                 className="option" 
                                 style={{ color: '#ea4335', fontWeight: 'bold' }}
-                                onClick={() => pinMessage()}
+                                onClick={() => handlePinMessage()}
                             >
                                 <MdPushPin size={20} color="#ea4335" />
                                 Unpin
                             </div>)
-                            :(<div className="option" onClick={() => pinMessage()}>
+                            :(<div className="option" onClick={() => handlePinMessage()}>
                                 <MdPushPin size={20} color="#ffffff" />
                                 Pin
                             </div>)

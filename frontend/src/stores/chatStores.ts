@@ -13,7 +13,6 @@ type ChatStore = {
 export const useChatStore = create<ChatStore>((set) => ({
 	// data fields
 	chats: [],
-    messages: [],
 	// setters
 	setChats: (chats: Chat[]) => set({ chats }),
     addMessageToChat: (chatId: number, messageId: number) => 
