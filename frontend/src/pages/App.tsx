@@ -25,6 +25,7 @@ import ReactMarkdown from 'react-markdown';
 
 import { useChatStore } from '@/stores/chatStores.ts';
 import { useMessageStore } from '@/stores/messageStores.ts';
+import { useUserStore } from '@/stores/userStore.ts';
 
 
 function App() {
@@ -38,13 +39,17 @@ function App() {
     
     // Message Store
     const messages = useMessageStore((s) => s.messages)
-    const setMessages = useMessageStore((s) => s.setMessages)
     const addMessage = useMessageStore((s) => s.addMessage)
     const deleteMessages = useMessageStore((s) => s.deleteMessages)
     const updateMessageContents = useMessageStore((s) => s.updateMessageContents)
     const pinMessage = useMessageStore((s) => s.pinMessage)
     
-    const [profiles, setProfiles] = useState<Profile[]>([]);
+    // Profile Store
+    const profiles = useUserStore((s) => s.profiles)
+    const setProfiles = useUserStore((s) => s.setProfiles)
+    const addProfile = useUserStore((s) => s.addProfile)
+    const deleteProfile = useUserStore((s) => s.deleteProfile)
+    const updateProfileField = useUserStore((s) => s.updateProfileField)
 
     // Local data
     const [tabs, setTabs] = useState<number[]>([]);
@@ -268,16 +273,6 @@ function App() {
         setChatMenuId(0);
     }
 
-    function updateProfileField(id: number, field: string, value: any) {
-        setProfiles(prev =>
-            prev.map(p =>
-                p.id === id
-                    ? { ...p, [field]: value }
-                    : p
-            )
-        );
-    }
-
     function handleDeleteChat() {
         const chat = chatsById[chatMenuId]
 
@@ -292,11 +287,9 @@ function App() {
         setChatMenuId(0);
     }
 
-    function deleteProfile(id: null | number) {
+    function handleDeleteProfile(id: number) {
         if (activeProfile === id) setActiveProfile(null)
-        setProfiles(prev =>
-            prev.filter(p => p.id != id)
-        )
+        deleteProfile(id)
     }
 
     function newProfile() {
@@ -309,7 +302,7 @@ function App() {
             maxTokens: 100,
             autoReply: false,
         }
-        setProfiles([...profiles, newProfile])
+        addProfile(newProfile)
         setActiveProfile(newProfile.id)
 
         requestAnimationFrame(() => {
@@ -1251,7 +1244,7 @@ function App() {
 
                                             <button
                                                 className="utility"
-                                                onClick={() => deleteProfile(p.id)}
+                                                onClick={() => handleDeleteProfile(p.id)}
                                             >
                                                 <MdDeleteOutline size={20} color="#ea4335" />
                                             </button>
