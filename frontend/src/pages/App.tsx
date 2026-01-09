@@ -1,5 +1,6 @@
 import Sidebar from '@/components/Sidebar.tsx'
 import ProfileDetails from '@/components/ProfileDetails.tsx';
+import Settings from '@/components/Settings.tsx';
 
 import { useState, useRef, useEffect, useMemo, type MouseEvent } from 'react'
 import {
@@ -26,6 +27,7 @@ import ReactMarkdown from 'react-markdown';
 import { useChatStore } from '@/stores/chatStores.ts';
 import { useMessageStore } from '@/stores/messageStores.ts';
 import { useUserStore } from '@/stores/userStore.ts';
+import { useAiStore } from '@/stores/aiStore.ts';
 
 
 function App() {
@@ -46,10 +48,14 @@ function App() {
     const setProfiles = useUserStore((s) => s.setProfiles)
     const addProfile = useUserStore((s) => s.addProfile)
     const deleteProfile = useUserStore((s) => s.deleteProfile)
+    
+    // AI Store
+    const modelsDetails = useAiStore((s) => s.modelsDetails)
 
     // Local data
     const [activeChat, setActiveChat] = useState<number | null>(null);
     const [editingProfile, setEditingProfile] = useState<number | null>(null);
+    const [settings, setSettings] = useState<boolean>(false);
 
     const [tabs, setTabs] = useState<number[]>([]);
     const [selectedModel, setSelectedModel] = useState<string>(aiModels[0]);
@@ -59,13 +65,10 @@ function App() {
     const [forwardMenu, setForwardMenu] = useState<boolean>(false);
     const [forwardTo, setForwardTo] = useState<number[]>([]);
 
-    const [modelsDetails, setModelsDetails] = useState<Model[]>(aiModels.map(m => modelDetails[m]));
-
     // Utils
     const [toolbar, setToolbar] = useState<boolean>(true);
     const [messageValue, setMessageValue] = useState('');
     const [thinking, setThinking] = useState<boolean>(false);
-    const [settings, setSettings] = useState<boolean>(false);
     const [replying, setReplying] = useState<[Message, Profile|Model] | null>(null);
     const [forwarding, setForwarding] = useState<number[] | null>(null);
 
@@ -261,21 +264,6 @@ function App() {
         });
     }
 
-    function saveKeys() {
-        for (const model of aiModels) {
-            localStorage.setItem(model, modelsDetails.find(m => m.name === model)!.key || '')
-        }
-    }
-
-    function setKey(model: string, key: string) {
-        setModelsDetails(prev =>
-            prev.map(m =>
-                m.name === model ?
-                    { ...m, key: key }
-                    : m
-            ))
-
-    }
 
     function replyTo() {
         const message = messagesById[messageMenuId];
@@ -389,18 +377,6 @@ function App() {
             }
             setProfiles([newProfile])
             setActiveProfile(newProfile.id)
-        }
-        for (const model of aiModels) {
-            const key = localStorage.getItem(model)
-            if (key) {
-                setModelsDetails(prev =>
-                    prev.map(m =>
-                        m.name === model ?
-                            { ...m, key: key }
-                            : m
-                    )
-                )
-            }
         }
     }, [])
 
@@ -614,59 +590,11 @@ function App() {
                         </div>
                     }
 
-                    {settings &&
-                        <div
-                            className="overlay"
-                        >
-                            <div
-                                className="settings"
-                            >
-                                <div
-                                    className="title"
-                                >
-                                    Settings
-                                </div>
-                                <div
-                                    className="section-title"
-                                >
-                                    API keys
-                                </div>
-                                {
-                                    modelsDetails.map(m =>
-                                        <div
-                                            className="field"
-                                            key={m.name}
-                                        >
-                                            <img src={m.logo} />
-                                            <input
-                                                key={m.name}
-                                                type="text"
-                                                value={m.key || ''}
-                                                onChange={(e) => setKey(m.name, e.target.value)}
-                                            />
-                                        </div>
-                                    )
-                                }
-                                <div style={{ flex: 1 }}></div>
-                                <div
-                                    className="button-row"
-                                >
-                                    <button
-                                        className="save-solid"
-                                        onClick={() => saveKeys()}
-                                    >
-                                        Save
-                                    </button>
-                                    <button
-                                        className="close-solid"
-                                        onClick={() => setSettings(false)}
-                                    >
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    }
+                    <Settings
+                        settings={settings}
+                        setSettings={setSettings}
+                    />
+
                     <ProfileDetails 
                         editingProfile={editingProfile}
                         setEditingProfile={setEditingProfile}
