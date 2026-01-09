@@ -1,4 +1,6 @@
 import Sidebar from '@/components/Sidebar.tsx'
+import ProfileDetails from '@/components/ProfileDetails.tsx';
+
 import { useState, useRef, useEffect, useMemo, type MouseEvent } from 'react'
 import {
     MdClose, MdAdd,
@@ -44,16 +46,15 @@ function App() {
     const setProfiles = useUserStore((s) => s.setProfiles)
     const addProfile = useUserStore((s) => s.addProfile)
     const deleteProfile = useUserStore((s) => s.deleteProfile)
-    const updateProfileField = useUserStore((s) => s.updateProfileField)
 
     // Local data
     const [activeChat, setActiveChat] = useState<number | null>(null);
+    const [editingProfile, setEditingProfile] = useState<number | null>(null);
 
     const [tabs, setTabs] = useState<number[]>([]);
     const [selectedModel, setSelectedModel] = useState<string>(aiModels[0]);
     const [activeProfile, setActiveProfile] = useState<number | null>(null);
     const [messageMenuId, setMessageMenuId] = useState<number>(0);
-    const [editingProfile, setEditingProfile] = useState<number | null>(null);
     const [editingMessage, setEditingMessage] = useState<number | null>(null);
     const [forwardMenu, setForwardMenu] = useState<boolean>(false);
     const [forwardTo, setForwardTo] = useState<number[]>([]);
@@ -666,122 +667,10 @@ function App() {
                             </div>
                         </div>
                     }
-                    {
-                        editingProfile &&
-                        <div
-                            className="overlay"
-                        >
-                            <div
-                                className="edit-profile"
-                            >
-                                <div
-                                    className="title"
-                                >
-                                    Editing
-                                    <span
-                                        style={{ color: profilesById[editingProfile].color, fontWeight: 'bold', filter: 'brightness(2)' }}
-                                    >
-                                        {profilesById[editingProfile].name + ' '}
-                                    </span>
-                                </div>
-                                <div className="field">
-                                    <label htmlFor="profile-name">Profile name</label>
-                                    <input
-                                        id="profile-name"
-                                        type="text"
-                                        value={profilesById[editingProfile].name}
-                                        onChange={e =>
-                                            updateProfileField(editingProfile, 'name', e.target.value)
-                                        }
-                                    />
-                                </div>
-
-                                <div className="field">
-                                    <label htmlFor="temperature">
-                                        Temperature
-                                    </label>
-                                    <div
-                                        className="inner-field"
-                                    >
-                                        <input
-                                            id="temperature"
-                                            type="range"
-                                            min={0}
-                                            max={2}
-                                            step={0.1}
-                                            value={profilesById[editingProfile].temperature}
-                                            onChange={e =>
-                                                updateProfileField(
-                                                    editingProfile,
-                                                    'temperature',
-                                                    Number(e.target.value)
-                                                )
-                                            }
-                                        />
-                                        <span className="value">
-                                            {profilesById[editingProfile].temperature.toFixed(1)}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="field checkbox">
-                                    <label htmlFor="stream">Streaming responses</label>
-                                    <input
-                                        id="stream"
-                                        type="checkbox"
-                                        checked={profilesById[editingProfile].stream}
-                                        onChange={e =>
-                                            updateProfileField(
-                                                editingProfile,
-                                                'stream',
-                                                e.target.checked
-                                            )
-                                        }
-                                    />
-                                </div>
-
-                                <div className="field checkbox">
-                                    <label htmlFor="autoreply">Auto reply</label>
-                                    <input
-                                        id="autoreply"
-                                        type="checkbox"
-                                        checked={profilesById[editingProfile].autoReply}
-                                        onChange={e =>
-                                            updateProfileField(
-                                                editingProfile,
-                                                'autoReply',
-                                                e.target.checked
-                                            )
-                                        }
-                                    />
-                                </div>
-
-                                <div className="field">
-                                    <label htmlFor="max-tokens">Max tokens</label>
-                                    <input
-                                        id="max-tokens"
-                                        type="number"
-                                        step="1"
-                                        min={1}
-                                        value={profilesById[editingProfile].maxTokens}
-                                        onChange={e =>
-                                            updateProfileField(
-                                                editingProfile,
-                                                'maxTokens',
-                                                Number(e.target.value)
-                                            )
-                                        }
-                                    />
-                                </div>
-                                <button
-                                    className="close-solid"
-                                    onClick={() => setEditingProfile(null)}
-                                >
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    }
+                    <ProfileDetails 
+                        editingProfile={editingProfile}
+                        setEditingProfile={setEditingProfile}
+                    />
                     {
                         activeChat && activeProfile &&
                         <>
