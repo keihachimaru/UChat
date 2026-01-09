@@ -1,8 +1,9 @@
 import Sidebar from '@/components/Sidebar.tsx'
 import ProfileDetails from '@/components/ProfileDetails.tsx';
 import Settings from '@/components/Settings.tsx';
+import Topbar from '@/components/Topbar.tsx';
 
-import { useState, useRef, useEffect, useMemo, type MouseEvent } from 'react'
+import { useState, useRef, useEffect, useMemo, type MouseEvent, act } from 'react'
 import {
     MdClose, MdAdd,
     MdEdit,
@@ -19,7 +20,7 @@ import '../styles/App.css'
 import type {
     Message, Model, Profile, Rag
 } from '../types/index.ts';
-import { generateID, createChat, capitalize, randomHex } from '../utils/general.ts';
+import { generateID, capitalize, randomHex } from '../utils/general.ts';
 import { aiModels, modelDetails } from '../constants/models.ts';
 import { sendMessageToAI } from '../services/aiServices.ts';
 import ReactMarkdown from 'react-markdown';
@@ -33,7 +34,6 @@ import { useAiStore } from '@/stores/aiStore.ts';
 function App() {
     // Chat Store
     const chats = useChatStore((s) => s.chats);
-    const setChats = useChatStore((s) => s.setChats)
     const addMessageToChat = useChatStore((s) => s.addMessageToChat)
     const forwardMessagesToChats = useChatStore((s) => s.forwardMessagesToChats)
     
@@ -57,7 +57,6 @@ function App() {
     const [editingProfile, setEditingProfile] = useState<number | null>(null);
     const [settings, setSettings] = useState<boolean>(false);
 
-    const [tabs, setTabs] = useState<number[]>([]);
     const [selectedModel, setSelectedModel] = useState<string>(aiModels[0]);
     const [activeProfile, setActiveProfile] = useState<number | null>(null);
     const [messageMenuId, setMessageMenuId] = useState<number>(0);
@@ -76,26 +75,7 @@ function App() {
     const messageMenuRef = useRef<any>(null);
 
     // Functions
-    function closeTab(event: MouseEvent | null, id: number) {
-        if (event) event.stopPropagation();
-        let index = tabs.indexOf(id)
-        if (tabs[index + 1]) setActiveChat(tabs[index + 1])
-        else if (tabs[index - 1]) setActiveChat(tabs[index - 1])
-        else setActiveChat(null)
 
-        setTabs(tabs.filter(t => t != id));
-    }
-
-    function newChat(
-        chatName?: string,
-    ) {
-        const num = chats.filter(c => c.name.startsWith('New chat')).length
-        const newChat = createChat(
-            chatName ? chatName : ('New chat' + (num > 0 ? ' ' + num : ''))
-        );
-        setChats([...chats, newChat]);
-        setActiveChat(newChat.id)
-    }
 
     async function sendMessage(
         content: string,
@@ -317,8 +297,8 @@ function App() {
     function forwardMessages(check: boolean) {
         if(check) {
             forwardMessagesToChats(forwardTo, forwarding!)
-            setTabs([... new Set([...tabs, ...forwardTo])])
-            setActiveChat(tabs[tabs.length-1])
+            // setTabs([... new Set([...tabs, ...forwardTo])])
+            // setActiveChat(tabs[tabs.length-1])
             setForwardTo([])
             setForwarding(null)
         }
@@ -380,9 +360,6 @@ function App() {
         }
     }, [])
 
-    useEffect(() => {
-        if (activeChat && !tabs.includes(activeChat)) setTabs([...tabs, activeChat])
-    }, [activeChat])
 
     useEffect(() => {
         const contents = document.querySelector('.contents');
@@ -450,6 +427,20 @@ function App() {
 
     return (
         <>
+            {/* MENUS */}
+
+            <Settings
+                settings={settings}
+                setSettings={setSettings}
+            />
+            
+            <ProfileDetails 
+                editingProfile={editingProfile}
+                setEditingProfile={setEditingProfile}
+            />
+
+            {/* CONTENT */}
+
             <Sidebar 
                 activeChat={activeChat} 
                 setActiveChat={setActiveChat}
@@ -458,41 +449,11 @@ function App() {
             <div
                 className="main"
             >
-                <div
-                    className="topbar"
-                >
-                    <button
-                        className="add"
-                        onClick={() => newChat()}
-                    >
-                        <MdAdd size={20} color="white" />
-                    </button>
-                    {
-                        tabs.map((t) => (
-                            <div
-                                className={[
-                                    "tab",
-                                    t === activeChat ?
-                                        "active" : ""
-                                ].join(" ")}
-                                key={t}
-                                onClick={() => t == activeChat ? setActiveChat(null) : setActiveChat(t)}
-                            >
-                                <div
-                                    className="tabName"
-                                >
-                                    {chats.find(c => c.id === t)?.name}
-                                </div>
-                                <button
-                                    className="close"
-                                    onClick={(e) => closeTab(e, t)}
-                                >
-                                    <MdClose size={16} color="white" />
-                                </button>
-                            </div>
-                        ))
-                    }
-                </div>
+                <Topbar
+                    activeChat={activeChat}
+                    setActiveChat={setActiveChat}
+                />
+
                 <div
                     className="chat-frame"
                 >
@@ -590,15 +551,6 @@ function App() {
                         </div>
                     }
 
-                    <Settings
-                        settings={settings}
-                        setSettings={setSettings}
-                    />
-
-                    <ProfileDetails 
-                        editingProfile={editingProfile}
-                        setEditingProfile={setEditingProfile}
-                    />
                     {
                         activeChat && activeProfile &&
                         <>
@@ -813,7 +765,7 @@ function App() {
                         >
                             <button
                                 className="new-chat"
-                                onClick={() => newChat()}
+                                /* onClick={() => newChat()}*/
                             >
                                 New chat
                             </button>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, act } from 'react'
 import { BsLayoutSidebar } from 'react-icons/bs';
 import { 
     MdOutlineMoreHoriz, 
@@ -90,6 +90,8 @@ const Sidebar = ({
         deleteMessages(chat.messageIds)
         deleteChat(chatMenuId)
 
+        if(chatMenuId===activeChat) setActiveChat(null);
+        
         const menu = document.getElementById('chat-menu');
         if (!menu) return;
         menu.classList.remove('visible');

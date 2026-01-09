@@ -12,3 +12,8 @@ export type SettingsType = {
     settings: boolean,
     setSettings: (s: boolean) => void
 }
+
+export type TopbarType = {
+    activeChat: number |  null,
+    setActiveChat: (c : number | null) => void
+}
