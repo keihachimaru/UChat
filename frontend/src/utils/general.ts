@@ -1,4 +1,4 @@
-import type { Chat } from '../types/index';
+import type { Chat } from '@/types/index';
 
 export function generateID() {
     return Math.floor(Math.random()*1000000);
