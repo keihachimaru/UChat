@@ -366,6 +366,7 @@
     box-sizing: border-box;
     transition: .1s;
     border: 1px solid transparent;
+    justify-content: space-between;
 }
 .message-row:has(.forwardTick) {
     background: #33333380;
