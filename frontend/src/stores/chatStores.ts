@@ -42,6 +42,5 @@ export const useChatStore = create<ChatStore>((set) => ({
                 ? { ...chat, messageIds: [...new Set([...chat.messageIds, ...sourceMessages])] }
                 : chat
             )
-        }))
-    
+        })),
 }));

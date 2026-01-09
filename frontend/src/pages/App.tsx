@@ -1,10 +1,8 @@
+import Sidebar from '@/components/Sidebar.tsx'
 import { useState, useRef, useEffect, useMemo, type MouseEvent } from 'react'
 import {
-    MdClose, MdOutlineMoreHoriz, MdAdd,
+    MdClose, MdAdd,
     MdEdit,
-    MdFileDownload,
-    MdInfoOutline,
-    MdArchive,
     MdPushPin,
     MdDeleteOutline,
     MdChevronRight,
@@ -12,7 +10,7 @@ import {
     MdReply
 } from 'react-icons/md';
 import { IoMdShareAlt } from "react-icons/io";
-import { BsLayoutSidebar, BsLayoutSidebarReverse } from "react-icons/bs";
+import { BsLayoutSidebarReverse } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
 import '../styles/App.css'
 import type {
@@ -33,14 +31,11 @@ function App() {
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats)
     const addMessageToChat = useChatStore((s) => s.addMessageToChat)
-    const updateChatName = useChatStore((s) => s.updateChatName)
-    const deleteChat = useChatStore((s) => s.deleteChat)
     const forwardMessagesToChats = useChatStore((s) => s.forwardMessagesToChats)
     
     // Message Store
     const messages = useMessageStore((s) => s.messages)
     const addMessage = useMessageStore((s) => s.addMessage)
-    const deleteMessages = useMessageStore((s) => s.deleteMessages)
     const updateMessageContents = useMessageStore((s) => s.updateMessageContents)
     const pinMessage = useMessageStore((s) => s.pinMessage)
     
@@ -52,22 +47,21 @@ function App() {
     const updateProfileField = useUserStore((s) => s.updateProfileField)
 
     // Local data
+    const [activeChat, setActiveChat] = useState<number | null>(null);
+
     const [tabs, setTabs] = useState<number[]>([]);
     const [selectedModel, setSelectedModel] = useState<string>(aiModels[0]);
     const [activeProfile, setActiveProfile] = useState<number | null>(null);
-    const [editingChatName, setEditingChatName] = useState<number>(0);
-    const [chatMenuId, setChatMenuId] = useState<number>(0);
     const [messageMenuId, setMessageMenuId] = useState<number>(0);
     const [editingProfile, setEditingProfile] = useState<number | null>(null);
-    const [modelsDetails, setModelsDetails] = useState<Model[]>(aiModels.map(m => modelDetails[m]));
     const [editingMessage, setEditingMessage] = useState<number | null>(null);
     const [forwardMenu, setForwardMenu] = useState<boolean>(false);
     const [forwardTo, setForwardTo] = useState<number[]>([]);
 
+    const [modelsDetails, setModelsDetails] = useState<Model[]>(aiModels.map(m => modelDetails[m]));
+
     // Utils
-    const [sidebar, setSidebar] = useState<boolean>(true);
     const [toolbar, setToolbar] = useState<boolean>(true);
-    const [activeChat, setActiveChat] = useState<number | null>(null);
     const [messageValue, setMessageValue] = useState('');
     const [thinking, setThinking] = useState<boolean>(false);
     const [settings, setSettings] = useState<boolean>(false);
@@ -75,7 +69,6 @@ function App() {
     const [forwarding, setForwarding] = useState<number[] | null>(null);
 
     // Refs
-    const chatMenuRef = useRef<any>(null);
     const messageMenuRef = useRef<any>(null);
 
     // Functions
@@ -216,27 +209,6 @@ function App() {
         }
     }
 
-    function showMenu(event: MouseEvent, id: number) {
-        event.stopPropagation();
-        const target = event.currentTarget
-        const menu = document.getElementById('chat-menu')
-
-        if (!menu) return;
-        if (target === chatMenuRef.current) {
-            chatMenuRef.current = null
-            menu.classList.remove('visible')
-            setChatMenuId(0);
-        }
-        else {
-            const rect = target.getBoundingClientRect()
-            menu.classList.add('visible')
-            menu.style.top = `${rect.bottom + window.scrollY}px`;
-            menu.style.left = `${rect.left + window.scrollX}px`;
-            setChatMenuId(id);
-            chatMenuRef.current = target
-        }
-    }
-
     function showMessageMenu(event: MouseEvent, id: number) {
         event.stopPropagation()
         const target = event.currentTarget
@@ -257,34 +229,6 @@ function App() {
             setMessageMenuId(id);
             messageMenuRef.current = target
         }
-    }
-
-    function editChatName() {
-        setEditingChatName(chatMenuId)
-        const chatInput = document.getElementById(chatMenuId + '-chat-input') as HTMLInputElement;
-        if (!chatInput) return;
-
-        chatInput.select()
-
-        const menu = document.getElementById('chat-menu');
-        if (!menu) return;
-        menu.classList.remove('visible');
-        chatMenuRef.current = null;
-        setChatMenuId(0);
-    }
-
-    function handleDeleteChat() {
-        const chat = chatsById[chatMenuId]
-
-        closeTab(null, chatMenuId);
-        deleteMessages(chat.messageIds)
-        deleteChat(chatMenuId)
-
-        const menu = document.getElementById('chat-menu');
-        if (!menu) return;
-        menu.classList.remove('visible');
-        chatMenuRef.current = null;
-        setChatMenuId(0);
     }
 
     function handleDeleteProfile(id: number) {
@@ -501,135 +445,39 @@ function App() {
     );
 
     // Event listeners
-    document.addEventListener('mouseup', (e) => {
-        if (!e.target) return;
+    useEffect(() => {
+        document.addEventListener('mouseup', (e) => {
+            if (!e.target) return;
 
-        const menu = document.getElementById('chat-menu');
-        if (menu && chatMenuRef.current) {
-            if (
-                !menu.contains(e.target as Node) &&
-                !chatMenuRef.current.contains(e.target as Node) &&
-                e.target !== chatMenuRef.current
-            ) {
-                menu.classList.remove('visible');
-                chatMenuRef.current = null;
-                setChatMenuId(0);
+            const messsageMenu = document.getElementById('message-menu')
+            if (messsageMenu && messageMenuRef.current) {
+                if (
+                    !messsageMenu.contains(e.target as Node) &&
+                    !messageMenuRef.current.contains(e.target as Node) &&
+                    e.target !== messageMenuRef.current
+                ) {
+                    messsageMenu.classList.remove('visible');
+                    messageMenuRef.current = null;
+                    setMessageMenuId(0);
+                }
             }
-        }
-        const messsageMenu = document.getElementById('message-menu')
-        if (messsageMenu && messageMenuRef.current) {
-            if (
-                !messsageMenu.contains(e.target as Node) &&
-                !messageMenuRef.current.contains(e.target as Node) &&
-                e.target !== messageMenuRef.current
-            ) {
-                messsageMenu.classList.remove('visible');
-                messageMenuRef.current = null;
-                setMessageMenuId(0);
+            
+            if (editingProfile && (e.target as HTMLDivElement).classList.contains('overlay')) {
+                setEditingProfile(null);
             }
-        }
-        
-        if (editingProfile && (e.target as HTMLDivElement).classList.contains('overlay')) {
-            setEditingProfile(null);
-        }
-        if (settings && (e.target as HTMLDivElement).classList.contains('overlay')) {
-            setSettings(false);
-        }
-    })
+            if (settings && (e.target as HTMLDivElement).classList.contains('overlay')) {
+                setSettings(false);
+            }
+        })
+    }, [])
 
     return (
         <>
-            <div
-                className={["sidebar", sidebar ? "" : "hidden"].join(" ")}
-            >
-                <div id="chat-menu">
-                    <div className="option" onClick={() => editChatName()}>
-                        <MdEdit size={20} color="#ffffff" />
-                        Rename
-                    </div>
+            <Sidebar 
+                activeChat={activeChat} 
+                setActiveChat={setActiveChat}
+            />
 
-                    <div className="option disabled">
-                        <MdFileDownload size={20} color="#ffffff" />
-                        Export
-                    </div>
-
-                    <div className="option disabled">
-                        <MdInfoOutline size={20} color="#ffffff" />
-                        View Details
-                    </div>
-
-                    <div className="option disabled">
-                        <MdArchive size={20} color="#ffffff" />
-                        Archive
-                    </div>
-
-                    <div className="option disabled">
-                        <MdPushPin size={20} color="#ffffff" />
-                        Pin
-                    </div>
-
-                    <div
-                        className="option"
-                        style={{ color: '#ea4335', fontWeight: 'bold' }}
-                        onClick={() => handleDeleteChat()}
-                    >
-                        <MdDeleteOutline size={20} color="#ea4335" />
-                        Delete
-                    </div>
-                </div>
-                <div
-                    className="sidebar-nav"
-                >
-                    <button
-                        className="toggle-sidebar"
-                        onClick={() => setSidebar(!sidebar)}
-                    >
-                        <BsLayoutSidebar size={24} color="#fff" />
-                    </button>
-                </div>
-                <div
-                    className="search"
-                >
-                    <input
-                        placeholder="Search ..."
-                    />
-                </div>
-                <div
-                    className="chatList"
-                >
-                    {
-                        chats.map((c) => (
-                            <div
-                                className={[
-                                    "chatCard",
-                                    c.id === activeChat ?
-                                        "active" : ""
-                                ].join(" ")}
-                                key={c.id}
-                                onClick={() => c.id == activeChat ? setActiveChat(null) : setActiveChat(c.id)}
-                            >
-                                <div>
-                                    <input
-                                        id={c.id + '-chat-input'}
-                                        value={c.name}
-                                        readOnly={c.id !== editingChatName}
-                                        onChange={(e) => updateChatName(c.id, e.target.value)}
-                                        onBlur={() => {
-                                            setEditingChatName(0)
-                                        }}
-                                    />
-                                </div>
-                                <button
-                                    className="more"
-                                    onClick={(e) => showMenu(e, c.id)}
-                                >
-                                    <MdOutlineMoreHoriz size={20} color="white" />
-                                </button>
-                            </div>
-                        ))
-                    }
-                </div>
-            </div>
             <div
                 className="main"
             >
@@ -706,7 +554,7 @@ function App() {
                         <div
                             className="option"
                             style={{ color: '#ea4335', fontWeight: 'bold' }}
-                            onClick={() => handleDeleteChat()}
+                            onClick={() => handlePinMessage()}
                         >
                             <MdDeleteOutline size={20} color="#ea4335" />
                             Delete
