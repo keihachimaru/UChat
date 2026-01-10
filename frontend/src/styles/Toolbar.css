@@ -1,0 +1,136 @@
+.toolbar.visible {
+    width: 20%;
+    align-items: flex-start;
+}
+.toolbar {
+    height: 100%;
+    width: 45px;
+    align-items: center;
+    background: #272727;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 20px 10px;
+    box-sizing: border-box;
+    transition: width .2s;
+}
+.models {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #555;
+    padding-top: 10px;
+    border-bottom: 1px solid #555;
+    padding-bottom: 10px;
+}
+.visible .models, .visible .profiles {
+    width: 100%;
+    align-items: flex-start;
+    border-color: #444;
+}
+.aiModel {
+    width: 32px;
+    height: 32px;
+    overflow: hidden; 
+    border-radius: 5px;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 1px solid #272727;
+    cursor: pointer;
+    background: none;
+}
+.aiModel.active {
+    background: #333;
+}
+.aiModel:not(.active):hover {
+    border-color: #444;
+}
+.aiModel img {
+    width: 100%;
+    height: 100%;
+}
+.profiles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #555;
+    padding-bottom: 10px;
+    height: calc(50% - 30px);
+    overflow-y: scroll;
+}
+.profiles::-webkit-scrollbar {
+    display: none;
+}
+.toolbar .add {
+    flex-shrink: 0;
+    margin: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.profile {
+    height: 30px;
+    width: 30px;
+    border: none;
+    border-radius: 50%;
+    border: 2px solid #272727;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.profile.long {
+    width: 50%;
+    border-radius: 15px;
+}
+.profile.active {
+    border-color: #aaa;
+}
+.long.add {
+    background: #333;
+    width: 100%;
+    border-radius: 15px;
+}
+.long.add:hover {
+    border-radius: 15px;
+}
+.long-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 4px 3px 4px 3px;
+    border-radius: 18px;
+}
+.long-row.active {
+    background: #333;
+}
+.long-row.active .utility:hover {
+    background: #444;
+}
+.long-row:not(.active) .utility:hover {
+    background: #333;
+}
+.long-row.active .profile {
+    border-color: #aaa;
+}
+.utilities {
+    width: 50%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+.utility {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background .2s;
+    cursor: pointer;
+}
+.toggle-sidebar.end {
+    justify-self: flex-end;
+    padding: 5px;
+}

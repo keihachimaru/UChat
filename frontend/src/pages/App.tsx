@@ -2,10 +2,11 @@ import Sidebar from '@/components/Sidebar.tsx'
 import ProfileDetails from '@/components/ProfileDetails.tsx';
 import Settings from '@/components/Settings.tsx';
 import Topbar from '@/components/Topbar.tsx';
+import Toolbar from '@/components/Toolbar.tsx';
 
-import { useState, useRef, useEffect, useMemo, type MouseEvent, act } from 'react'
+import { useState, useRef, useEffect, useMemo, type MouseEvent } from 'react'
 import {
-    MdClose, MdAdd,
+    MdClose,
     MdEdit,
     MdPushPin,
     MdDeleteOutline,
@@ -14,14 +15,12 @@ import {
     MdReply
 } from 'react-icons/md';
 import { IoMdShareAlt } from "react-icons/io";
-import { BsLayoutSidebarReverse } from "react-icons/bs";
-import { IoSettingsOutline } from "react-icons/io5";
 import '../styles/App.css'
 import type {
     Message, Model, Profile, Rag
 } from '../types/index.ts';
-import { generateID, capitalize, randomHex } from '../utils/general.ts';
-import { aiModels, modelDetails } from '../constants/models.ts';
+import { generateID, capitalize } from '../utils/general.ts';
+import { modelDetails, aiModels } from '../constants/models.ts';
 import { sendMessageToAI } from '../services/aiServices.ts';
 import ReactMarkdown from 'react-markdown';
 
@@ -45,9 +44,6 @@ function App() {
     
     // Profile Store
     const profiles = useUserStore((s) => s.profiles)
-    const setProfiles = useUserStore((s) => s.setProfiles)
-    const addProfile = useUserStore((s) => s.addProfile)
-    const deleteProfile = useUserStore((s) => s.deleteProfile)
     
     // AI Store
     const modelsDetails = useAiStore((s) => s.modelsDetails)
@@ -56,16 +52,15 @@ function App() {
     const [activeChat, setActiveChat] = useState<number | null>(null);
     const [editingProfile, setEditingProfile] = useState<number | null>(null);
     const [settings, setSettings] = useState<boolean>(false);
-
-    const [selectedModel, setSelectedModel] = useState<string>(aiModels[0]);
     const [activeProfile, setActiveProfile] = useState<number | null>(null);
+    const [selectedModel, setSelectedModel] = useState<string>(aiModels[0]);
+
     const [messageMenuId, setMessageMenuId] = useState<number>(0);
     const [editingMessage, setEditingMessage] = useState<number | null>(null);
     const [forwardMenu, setForwardMenu] = useState<boolean>(false);
     const [forwardTo, setForwardTo] = useState<number[]>([]);
 
     // Utils
-    const [toolbar, setToolbar] = useState<boolean>(true);
     const [messageValue, setMessageValue] = useState('');
     const [thinking, setThinking] = useState<boolean>(false);
     const [replying, setReplying] = useState<[Message, Profile|Model] | null>(null);
@@ -215,34 +210,7 @@ function App() {
         }
     }
 
-    function handleDeleteProfile(id: number) {
-        if (activeProfile === id) setActiveProfile(null)
-        deleteProfile(id)
-    }
 
-    function newProfile() {
-        const newProfile = {
-            id: generateID(),
-            name: 'New profile',
-            color: randomHex(),
-            temperature: 1.0,
-            stream: true,
-            maxTokens: 100,
-            autoReply: false,
-        }
-        addProfile(newProfile)
-        setActiveProfile(newProfile.id)
-
-        requestAnimationFrame(() => {
-            const contents = document.querySelector('.profiles');
-            if (contents) {
-                contents.scrollTo({
-                    top: contents.scrollHeight,
-                    behavior: 'smooth',
-                });
-            }
-        });
-    }
 
 
     function replyTo() {
@@ -344,21 +312,6 @@ function App() {
     }
 
     // Hooks
-    useEffect(() => {
-        if (profiles.length === 0) {
-            const newProfile = {
-                id: generateID(),
-                name: 'New profile',
-                color: randomHex(),
-                temperature: 1.0,
-                stream: true,
-                maxTokens: 100,
-                autoReply: false,
-            }
-            setProfiles([newProfile])
-            setActiveProfile(newProfile.id)
-        }
-    }, [])
 
 
     useEffect(() => {
@@ -773,112 +726,16 @@ function App() {
                     }
                 </div>
             </div>
-            <div
-                className={["toolbar", toolbar ? "" : "visible"].join(" ")}
-            >
-                <button
-                    className="toggle-sidebar"
-                    onClick={() => setToolbar(!toolbar)}
-                >
-                    <BsLayoutSidebarReverse size={24} color="#fff" />
-                </button>
-                <div
-                    className="models"
-                >
-                    {
-                        toolbar ?
-                            aiModels.map(i =>
-                                <button
-                                    key={i}
-                                    className={["aiModel", i === selectedModel ? "active" : ""].join(" ")}
-                                    onClick={() => setSelectedModel(i)}
-                                >
-                                    <img src={modelDetails[i].logo} />
-                                </button>
-                            ) :
-                            aiModels.map(i =>
-                                <button
-                                    key={i}
-                                    className={["aiModel", i === selectedModel ? "active" : ""].join(" ")}
-                                    onClick={() => setSelectedModel(i)}
-                                >
-                                    <img src={modelDetails[i].logo} />
-                                </button>
-                            )
-                    }
-                </div>
 
-                <button
-                    className={["add", toolbar ? "" : "long"].join(" ")}
-                    onClick={() => newProfile()}
-                >
-                    <MdAdd size={20} color="white" />
-                </button>
-
-                <div
-                    className="profiles"
-                >   {
-                        toolbar ?
-                            <>
-                                {profiles.map(p =>
-                                    <button
-                                        key={p.id}
-                                        className={["profile", p.id === activeProfile ? "active" : ""].join(" ")}
-                                        onClick={() => setActiveProfile(p.id)}
-                                        onDoubleClick={() => setToolbar(!toolbar)}
-                                        style={{ 'background': p.color }}
-                                    >
-                                        {p.name[0]}
-                                    </button>
-                                )}
-                            </>
-                            :
-                            <>
-                                {profiles.map(p =>
-                                    <div
-                                        key={p.id}
-                                        className={["long-row", p.id === activeProfile ? "active" : ""].join(" ")}
-                                    >
-                                        <button
-                                            className="profile long"
-                                            onClick={() => setActiveProfile(p.id)}
-                                            onDoubleClick={() => setEditingProfile(p.id)}
-                                            style={{ 'background': p.color }}
-                                        >
-                                            {p.name}
-                                        </button>
-
-
-                                        <div
-                                            className="utilities"
-                                        >
-                                            <button
-                                                className="utility"
-                                                onClick={() => setEditingProfile(p.id)}
-                                            >
-                                                <MdEdit size={20} color="#fff" />
-                                            </button>
-
-                                            <button
-                                                className="utility"
-                                                onClick={() => handleDeleteProfile(p.id)}
-                                            >
-                                                <MdDeleteOutline size={20} color="#ea4335" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </>
-                    }
-                </div>
-                <div style={{ flex: 1 }}></div>
-                <button
-                    className="toggle-sidebar end"
-                    onClick={() => setSettings(!settings)}
-                >
-                    <IoSettingsOutline size={30} color="#fff" />
-                </button>
-            </div>
+            <Toolbar
+                activeProfile={activeProfile}
+                setActiveProfile={setActiveProfile}
+                settings={settings}
+                setSettings={setSettings}
+                selectedModel={selectedModel}
+                setSelectedModel={setSelectedModel}
+                setEditingProfile={setEditingProfile}
+            />
         </>
     )
 }

@@ -14,6 +14,16 @@ export type SettingsType = {
 }
 
 export type TopbarType = {
-    activeChat: number |  null,
+    activeChat: number | null,
     setActiveChat: (c : number | null) => void
+}
+
+export type ToolbarType = {
+    activeProfile: number | null,
+    setActiveProfile: (c: number | null) => void,
+    settings: boolean,
+    setSettings: (s: boolean) => void,
+    selectedModel: string,
+    setSelectedModel: (m: string) => void,
+    setEditingProfile: (c: number | null) => void,
 }

@@ -2,6 +2,7 @@ import type { SettingsType } from "@/types";
 import { useEffect } from 'react';
 import { aiModels, modelDetails } from '../constants/models.ts';
 import { useAiStore } from "@/stores/aiStore.ts";
+import '@/styles/Settings.css';
 
 const Settings = ({
     settings, setSettings

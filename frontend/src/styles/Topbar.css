@@ -1,0 +1,46 @@
+.topbar {
+    background: #222;
+    width: calc(100% - 40px) !important;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0px 20px 0px 20px;
+    box-sizing: border-box;
+    gap: 5px;
+}
+.tab {
+    height: 30px;
+    width: 120px;
+    border-radius: 8px;
+    background: #272727;
+    display: flex;
+    padding: 3px 5px 3px 9px;
+    align-items: center;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    font-size: .85em;
+    user-select: none;
+    justify-content: space-between;
+    position: relative;
+    min-width: 30px;
+}
+.tabName {
+    min-width: 0;
+    text-wrap: ellipsis;
+    overflow: hidden;
+}
+.tab:hover {
+    border-color: #272727;
+    cursor: pointer;
+}
+.tab:hover .close {
+    opacity: 1;
+    cursor: pointer;
+}
+.tab.active {
+    background: #333;
+}
+.tab.active .close {
+    opacity: 1;
+    cursor: pointer;
+}
