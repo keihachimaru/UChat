@@ -27,3 +27,10 @@ export type ToolbarType = {
     setSelectedModel: (m: string) => void,
     setEditingProfile: (c: number | null) => void,
 }
+
+export type ForwardType = {
+    forwarding: number[] | null,
+    setForwarding: (f: number[] | null) => void,
+    forwardMenu: boolean,
+    setForwardMenu: (s: boolean) => void,
+}

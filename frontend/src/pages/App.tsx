@@ -3,6 +3,7 @@ import ProfileDetails from '@/components/ProfileDetails.tsx';
 import Settings from '@/components/Settings.tsx';
 import Topbar from '@/components/Topbar.tsx';
 import Toolbar from '@/components/Toolbar.tsx';
+import Forward from '@/components/Forward.tsx';
 
 import { useState, useRef, useEffect, useMemo, type MouseEvent } from 'react'
 import {
@@ -34,7 +35,6 @@ function App() {
     // Chat Store
     const chats = useChatStore((s) => s.chats);
     const addMessageToChat = useChatStore((s) => s.addMessageToChat)
-    const forwardMessagesToChats = useChatStore((s) => s.forwardMessagesToChats)
     
     // Message Store
     const messages = useMessageStore((s) => s.messages)
@@ -54,17 +54,16 @@ function App() {
     const [settings, setSettings] = useState<boolean>(false);
     const [activeProfile, setActiveProfile] = useState<number | null>(null);
     const [selectedModel, setSelectedModel] = useState<string>(aiModels[0]);
+    const [forwarding, setForwarding] = useState<number[] | null>(null);
+    const [forwardMenu, setForwardMenu] = useState<boolean>(false);
 
     const [messageMenuId, setMessageMenuId] = useState<number>(0);
     const [editingMessage, setEditingMessage] = useState<number | null>(null);
-    const [forwardMenu, setForwardMenu] = useState<boolean>(false);
-    const [forwardTo, setForwardTo] = useState<number[]>([]);
 
     // Utils
     const [messageValue, setMessageValue] = useState('');
     const [thinking, setThinking] = useState<boolean>(false);
     const [replying, setReplying] = useState<[Message, Profile|Model] | null>(null);
-    const [forwarding, setForwarding] = useState<number[] | null>(null);
 
     // Refs
     const messageMenuRef = useRef<any>(null);
@@ -254,27 +253,7 @@ function App() {
         }
     }
 
-    function changeForwardTo(id: number) {
-        if(forwardTo.includes(id)) {
-            setForwardTo(prev => prev!.filter(f => f!==id))
-        }
-        else {
-            setForwardTo([...forwardTo, id])
-        }
-    }
-    function forwardMessages(check: boolean) {
-        if(check) {
-            forwardMessagesToChats(forwardTo, forwarding!)
-            // setTabs([... new Set([...tabs, ...forwardTo])])
-            // setActiveChat(tabs[tabs.length-1])
-            setForwardTo([])
-            setForwarding(null)
-        }
-        else {
-            setForwarding(null);
-        }
-        setForwardMenu(false);
-    }
+    
 
     function editMessage() {
         setEditingMessage(messageMenuId)
@@ -382,6 +361,13 @@ function App() {
         <>
             {/* MENUS */}
 
+            <Forward
+                forwarding={forwarding}
+                setForwarding={setForwarding}
+                forwardMenu={forwardMenu}
+                setForwardMenu={setForwardMenu}
+            />
+
             <Settings
                 settings={settings}
                 setSettings={setSettings}
@@ -452,57 +438,6 @@ function App() {
                         </div>
                     </div>
 
-                    {forwardMenu &&
-                        <div
-                            className="overlay"
-                        >
-                            <div
-                                className="forward-menu"
-                            >
-                                <div
-                                    className="title"
-                                >
-                                    Forward to
-                                </div>
-                                <br></br>
-                                <div
-                                    className="forward-chats-container"
-                                >
-                                    {
-                                        chats.map(c =>
-                                            <div
-                                                className="forward-chat"
-                                            >
-                                                { c.name }
-                                                <input
-                                                    className="forwardTick"
-                                                    type="checkbox"
-                                                    checked={forwardTo.includes(c.id)}
-                                                    onChange={()=>changeForwardTo(c.id)}
-                                                ></input>
-                                            </div>
-                                        )
-                                    }
-                                </div>
-                                <div
-                                    className="button-row"
-                                >
-                                    <button
-                                        className="save-solid"
-                                        onClick={() => forwardMessages(true)}
-                                    >
-                                        Save
-                                    </button>
-                                    <button
-                                        className="close-solid"
-                                        onClick={() => forwardMessages(false)}
-                                    >
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    }
 
                     {
                         activeChat && activeProfile &&
