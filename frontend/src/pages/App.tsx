@@ -6,24 +6,17 @@ import Toolbar from '@/components/Toolbar.tsx';
 import Forward from '@/components/Forward.tsx';
 import Chat from '@/components/Chat.tsx';
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import '../styles/App.css'
-import type {
-    Message, Model, Profile 
-} from '../types/index.ts';
-import { aiModels } from '../constants/models.ts';
+import { useUiStore } from '@/stores/uiStore';
 
 function App() {
     // Local data
-    const [activeChat, setActiveChat] = useState<number | null>(null);
-    const [editingProfile, setEditingProfile] = useState<number | null>(null);
-    const [settings, setSettings] = useState<boolean>(false);
-    const [activeProfile, setActiveProfile] = useState<number | null>(null);
-    const [selectedModel, setSelectedModel] = useState<string>(aiModels[0]);
-    const [forwarding, setForwarding] = useState<number[] | null>(null);
-    const [forwardMenu, setForwardMenu] = useState<boolean>(false);
-    const [replying, setReplying] = useState<[Message, Profile|Model] | null>(null);
+    const editingProfile = useUiStore((s) => s.editingProfile);
+    const setEditingProfile = useUiStore((s) => s.setEditingProfile);
 
+    const settings = useUiStore((s) => s.settings);
+    const setSettings = useUiStore((s) => s.setSettings);
 
     // Event listeners
     useEffect(() => {
@@ -47,60 +40,25 @@ function App() {
         <>
             {/* MENUS */}
 
-            <Forward
-                forwarding={forwarding}
-                setForwarding={setForwarding}
-                forwardMenu={forwardMenu}
-                setForwardMenu={setForwardMenu}
-            />
+            <Forward/>
 
-            <Settings
-                settings={settings}
-                setSettings={setSettings}
-            />
+            <Settings/>
             
-            <ProfileDetails 
-                editingProfile={editingProfile}
-                setEditingProfile={setEditingProfile}
-            />
+            <ProfileDetails />
 
             {/* CONTENT */}
 
-            <Sidebar 
-                activeChat={activeChat} 
-                setActiveChat={setActiveChat}
-            />
+            <Sidebar/>
 
             <div
                 className="main"
             >
-                <Topbar
-                    activeChat={activeChat}
-                    setActiveChat={setActiveChat}
-                />
-                <Chat
-                    activeProfile={activeProfile}
-                    selectedModel={selectedModel}
-                    setForwardMenu={setForwardMenu}
-                    forwarding={forwarding}
-                    setForwarding={setForwarding}
-                    activeChat={activeChat}
-                    setActiveChat={setActiveChat}
-                    replying={replying}
-                    setReplying={setReplying}
-                />
+                <Topbar/>
+                <Chat/>
 
             </div>
 
-            <Toolbar
-                activeProfile={activeProfile}
-                setActiveProfile={setActiveProfile}
-                settings={settings}
-                setSettings={setSettings}
-                selectedModel={selectedModel}
-                setSelectedModel={setSelectedModel}
-                setEditingProfile={setEditingProfile}
-            />
+            <Toolbar/>
         </>
     )
 }

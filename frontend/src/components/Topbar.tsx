@@ -1,14 +1,14 @@
 import { MdClose, MdAdd } from 'react-icons/md';
-import type { TopbarType } from '@/types';
 import { useChatStore } from '@/stores/chatStores';
 import { createChat } from '@/utils/general';
 import { useEffect, useState } from 'react';
 import '@/styles/Topbar.css';
+import { useUiStore } from '@/stores/uiStore';
 
-const Topbar = ({
-    activeChat, setActiveChat
-}: TopbarType) => {
-
+const Topbar = () => {
+    const activeChat = useUiStore((s) => s.activeChat);
+    const setActiveChat = useUiStore((s) => s.setActiveChat);
+    
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats);
 

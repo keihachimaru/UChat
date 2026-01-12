@@ -5,15 +5,18 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { aiModels, modelDetails } from '@/constants/models';
 import { useUserStore } from '@/stores/userStore';
 import { generateID, randomHex } from '@/utils/general';
-import type { ToolbarType } from '@/types';
 import '@/styles/Toolbar.css';
+import { useUiStore } from '@/stores/uiStore';
 
-const toolbar = ({
-    activeProfile, setActiveProfile,
-    settings, setSettings,
-    selectedModel, setSelectedModel,
-    setEditingProfile,
-}: ToolbarType) => {
+const toolbar = () => {
+    const  activeProfile = useUiStore((s) => s.activeProfile);
+    const  setActiveProfile = useUiStore((s) => s.setActiveProfile);
+    const  settings = useUiStore((s) => s.settings);
+    const  setSettings = useUiStore((s) => s.setSettings);
+    const  selectedModel = useUiStore((s) => s.selectedModel);
+    const  setSelectedModel = useUiStore((s) => s.setSelectedModel);
+    const  setEditingProfile = useUiStore((s) => s.setEditingProfile);
+
     const [toolbar, setToolbar] = useState<boolean>(true);
 
     const profiles = useUserStore((s) => s.profiles)

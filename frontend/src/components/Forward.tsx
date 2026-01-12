@@ -1,13 +1,15 @@
 import { useChatStore } from "@/stores/chatStores";
 import { useState } from 'react';
-import type { ForwardType } from "@/types/components";
 import '@/styles/Forward.css';
+import { useUiStore } from "@/stores/uiStore";
 
-const Forward = ({
-    forwarding, setForwarding,
-    forwardMenu, setForwardMenu
-} : ForwardType) => {
+const Forward = () => {
     const [forwardTo, setForwardTo] = useState<number[]>([]);
+
+    const forwarding = useUiStore((s) => s.forwarding);
+    const setForwarding = useUiStore((s) => s.setForwarding);
+    const forwardMenu = useUiStore((s) => s.forwardMenu);
+    const setForwardMenu = useUiStore((s) => s.setForwardMenu);
 
     const chats = useChatStore((s) => s.chats);
     const forwardMessagesToChats = useChatStore((s) => s.forwardMessagesToChats)

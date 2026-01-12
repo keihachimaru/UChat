@@ -1,12 +1,13 @@
-import type { SettingsType } from "@/types";
 import { useEffect } from 'react';
 import { aiModels, modelDetails } from '../constants/models.ts';
 import { useAiStore } from "@/stores/aiStore.ts";
 import '@/styles/Settings.css';
+import { useUiStore } from "@/stores/uiStore.ts";
 
-const Settings = ({
-    settings, setSettings
-} : SettingsType) => {
+const Settings = () => {
+    const settings = useUiStore((s) => s.settings);
+    const setSettings = useUiStore((s) => s.setSettings);
+
     const modelsDetails = useAiStore((s) => s.modelsDetails)
     const setModelsDetails = useAiStore((s) => s.setModelsDetails)
     const setModelKey = useAiStore((s) => s.setModelKey)

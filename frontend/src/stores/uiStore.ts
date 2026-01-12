@@ -1,0 +1,41 @@
+import { create } from 'zustand';
+import type { Message, Profile, Model } from '@/types/index';
+import { aiModels } from '@/constants/models';
+
+type uiStoreType = {
+    activeChat: number | null,
+    setActiveChat: (s: number | null) => void,
+    editingProfile: number | null, 
+    setEditingProfile: (s: number | null) => void,
+    settings: boolean,
+    setSettings: (s: boolean) => void,
+    activeProfile: number | null,
+    setActiveProfile: (s: number | null) => void,
+    selectedModel: string,
+    setSelectedModel: (m: string) => void,    
+    forwarding: number[] | null,
+    setForwarding: (f: number[] | null) => void,
+    forwardMenu: boolean,
+    setForwardMenu: (f: boolean) => void,
+    replying: [Message, Profile | Model] | null,
+    setReplying: (r: [Message, Profile | Model] | null) => void,
+}
+
+export const useUiStore = create<uiStoreType>((set)=>({
+    activeChat: null,
+    setActiveChat: (s: number | null) => set({ activeChat: s }),
+    editingProfile: null,
+    setEditingProfile: (s: number | null) => set({ editingProfile: s }),
+    settings: false,
+    setSettings: (s: boolean) => set({ settings: s }),
+    activeProfile: null,
+    setActiveProfile: (s: number | null) => set({ activeProfile: s }),
+    selectedModel: aiModels[0],
+    setSelectedModel: (s: string) => set({ selectedModel: s }),
+    forwarding: null,
+    setForwarding: (s: number[] | null) => set({ forwarding: s }),
+    forwardMenu: false,
+    setForwardMenu: (s: boolean) => set({ forwardMenu: s}),
+    replying: null,
+    setReplying: (s: [Message, Profile | Model] | null) => set({ replying: s})
+}))

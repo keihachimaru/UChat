@@ -10,13 +10,14 @@ import {
     MdPushPin
 } from 'react-icons/md';
 import { useChatStore } from '@/stores/chatStores.ts';
-import type { SidebarType } from '@/types';
 import { useMessageStore } from '@/stores/messageStores';
 import '@/styles/Sidebar.css'
+import { useUiStore } from '@/stores/uiStore';
 
-const Sidebar = ({ 
-    activeChat, setActiveChat, 
-}: SidebarType) => {
+const Sidebar = () => {
+    const activeChat = useUiStore((s) => s.activeChat);
+    const setActiveChat = useUiStore((s) => s.setActiveChat);
+
     const chats = useChatStore((s) => s.chats);
     const updateChatName = useChatStore((s) => s.updateChatName)
     const deleteChat = useChatStore((s) => s.deleteChat)

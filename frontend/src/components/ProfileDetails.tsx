@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 import { useUserStore } from "@/stores/userStore";
-import type { ProfileDetailsType } from '@/types';
 import '@/styles/ProfileDetails.css';
+import { useUiStore } from '@/stores/uiStore';
 
-const ProfileDetails = ({
-    editingProfile, setEditingProfile
-}: ProfileDetailsType) => {
+const ProfileDetails = () => {
+    const editingProfile = useUiStore((s) => s.editingProfile);
+    const setEditingProfile= useUiStore((s) => s.setEditingProfile);
+    
     const profiles = useUserStore((s) => s.profiles)
     const updateProfileField = useUserStore((s) => s.updateProfileField)
 

@@ -18,18 +18,21 @@ import { useUserStore } from '@/stores/userStore.ts';
 import { useAiStore } from '@/stores/aiStore.ts';
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { modelDetails } from '@/constants/models.ts';
-import type { ChatType } from '@/types/components.ts';
 import type { Rag, Message } from '@/types/index.ts';
 import '@/styles/Chat.css';
+import { useUiStore } from '@/stores/uiStore.ts';
 
-const Chat = ({
-    activeProfile,
-    selectedModel,
-    setForwardMenu,
-    forwarding, setForwarding,
-    activeChat, setActiveChat,
-    replying, setReplying,
-} : ChatType) => {
+const Chat = () => {
+    const activeProfile = useUiStore((s) => s.activeProfile)
+    const selectedModel = useUiStore((s) => s.selectedModel)
+    const setForwardMenu = useUiStore((s) => s.setForwardMenu)
+    const forwarding = useUiStore((s) => s.forwarding)
+    const setForwarding = useUiStore((s) => s.setForwarding)
+    const activeChat = useUiStore((s) => s.activeChat)
+    const setActiveChat = useUiStore((s) => s.setActiveChat)
+    const replying = useUiStore((s) => s.replying)
+    const setReplying = useUiStore((s) => s.setReplying)
+
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats);
     const addMessageToChat = useChatStore((s) => s.addMessageToChat)
