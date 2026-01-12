@@ -27,7 +27,7 @@ function App() {
 
     // Event listeners
     useEffect(() => {
-        document.addEventListener('mouseup', (e) => {
+        const handleMouseUp = (e: MouseEvent) => {
             if (!e.target) return;
             
             if (editingProfile && (e.target as HTMLDivElement).classList.contains('overlay')) {
@@ -36,8 +36,12 @@ function App() {
             if (settings && (e.target as HTMLDivElement).classList.contains('overlay')) {
                 setSettings(false);
             }
-        })
-    }, [])
+        }
+        document.addEventListener('mouseup', handleMouseUp)
+
+        return () => document.removeEventListener('mouseup', handleMouseUp)
+
+    }, [editingProfile, settings])
 
     return (
         <>
