@@ -1,3 +1,5 @@
+import type { Model, Message, Profile } from '@/types/index';
+
 export type SidebarType = {
     activeChat: number |  null,
     setActiveChat: (c : number | null) => void
@@ -33,4 +35,16 @@ export type ForwardType = {
     setForwarding: (f: number[] | null) => void,
     forwardMenu: boolean,
     setForwardMenu: (s: boolean) => void,
+}
+
+export type ChatType = {
+    activeProfile: number | null,
+    selectedModel: string,
+    setForwardMenu: (s: boolean) => void,
+    forwarding: number[] | null,
+    setForwarding: (f: number[] | null) => void,
+    activeChat: number | null,
+    setActiveChat: (c: number | null) => void,
+    replying: [Message, Profile|Model] | null,
+    setReplying: (r: [Message, Profile|Model] | null) => void,
 }
