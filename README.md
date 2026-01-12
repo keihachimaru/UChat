@@ -17,13 +17,12 @@ B. Model & Provider Layer
 - Provider abstraction (OpenAI / DeepSeek / etc.)
 - User-supplied API keys (premium/local config)
 - Streaming responses
-- Cancel generation
 
 C. Message Controls
 
 - Pin messages
 - Edit user messages
-- Fork conversation from pinned message (optional but strong)
+- Forward message to another conversation
 
 D. Document & Knowledge Management
 
