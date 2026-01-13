@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MdAdd, MdEdit, MdDeleteOutline } from 'react-icons/md';
+import { MdAdd, MdEdit, MdDeleteOutline, MdAccountCircle } from 'react-icons/md';
 import { BsLayoutSidebarReverse } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
 import { aiModels, modelDetails } from '@/constants/models';
@@ -23,10 +23,16 @@ const toolbar = () => {
     const setProfiles = useUserStore((s) => s.setProfiles)
     const addProfile = useUserStore((s) => s.addProfile)
     const deleteProfile = useUserStore((s) => s.deleteProfile)
+    const token = useUserStore((s) => s.token);
+    const avatar = useUserStore((s) => s.avatar);
 
     function handleDeleteProfile(id: number) {
         if (activeProfile === id) setActiveProfile(null)
         deleteProfile(id)
+    }
+
+    function handleLogin() {
+        window.location.href = 'http://localhost:3000/auth/google'
     }
 
     function newProfile() {
@@ -53,6 +59,15 @@ const toolbar = () => {
         });
     }
 
+    async function fetchProfile() {
+        const res = await fetch('http://localhost:3000/auth/me', {
+            method: 'GET',
+            credentials: 'include',
+        })
+        const data = await res.json();
+        console.log(data);
+    }
+
     useEffect(() => {
         if (profiles.length === 0) {
             const newProfile = {
@@ -67,6 +82,7 @@ const toolbar = () => {
             setProfiles([newProfile])
             setActiveProfile(newProfile.id)
         }
+        fetchProfile();
     }, [])
 
     return (
@@ -169,6 +185,16 @@ const toolbar = () => {
                 }
             </div>
             <div style={{ flex: 1 }}></div>
+            <button
+                className="toggle-sidebar end"
+                onClick={() => handleLogin()}
+            >
+                { 
+                    avatar
+                    ?<img src={avatar} height="30" width="30"/>
+                    :<MdAccountCircle size={30} color="#fff" />
+                }
+            </button>
             <button
                 className="toggle-sidebar end"
                 onClick={() => setSettings(!settings)}
