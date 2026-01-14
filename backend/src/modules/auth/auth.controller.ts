@@ -28,7 +28,17 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   getProfile(@Req() req) {
-    console.log(req.user)
     return req.user;
+  }
+  
+  @Get('logout')
+  logout(@Res() res) {
+    res.clearCookie('jwt', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+
+    return res.status(200).json({ message: 'Logged out' });
   }
 }

@@ -134,3 +134,6 @@
     justify-self: flex-end;
     padding: 5px;
 }
+.avatar {
+    border-radius: 50%;
+}

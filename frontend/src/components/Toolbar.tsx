@@ -24,7 +24,9 @@ const toolbar = () => {
     const addProfile = useUserStore((s) => s.addProfile)
     const deleteProfile = useUserStore((s) => s.deleteProfile)
     const token = useUserStore((s) => s.token);
+    const setToken = useUserStore((s) => s.setToken);
     const avatar = useUserStore((s) => s.avatar);
+    const setAvatar = useUserStore((s) => s.setAvatar);
 
     function handleDeleteProfile(id: number) {
         if (activeProfile === id) setActiveProfile(null)
@@ -32,7 +34,8 @@ const toolbar = () => {
     }
 
     function handleLogin() {
-        window.location.href = 'http://localhost:3000/auth/google'
+        if(token) logout()
+        else window.location.href = 'http://localhost:3000/auth/google'
     }
 
     function newProfile() {
@@ -65,7 +68,17 @@ const toolbar = () => {
             credentials: 'include',
         })
         const data = await res.json();
-        console.log(data);
+        console.log(data)
+        setToken(data.providerId);
+        setAvatar(data.avatar);
+    }
+
+    async function logout() {
+        await fetch('http://localhost:3000/auth/logout', {
+            method: 'GET',
+        })
+        setToken('');
+        setAvatar(null);
     }
 
     useEffect(() => {
@@ -187,11 +200,17 @@ const toolbar = () => {
             <div style={{ flex: 1 }}></div>
             <button
                 className="toggle-sidebar end"
+                style={{ marginBottom: '10px' }}
                 onClick={() => handleLogin()}
             >
                 { 
                     avatar
-                    ?<img src={avatar} height="30" width="30"/>
+                    ?<img 
+                        className="avatar"
+                        src={avatar} 
+                        height="30" 
+                        width="30"
+                    />
                     :<MdAccountCircle size={30} color="#fff" />
                 }
             </button>
