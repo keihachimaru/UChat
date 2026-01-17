@@ -68,7 +68,7 @@ const toolbar = () => {
             credentials: 'include',
         })
         const data = await res.json();
-        console.log(data)
+        localStorage.setItem('logged', 'true');
         setToken(data.providerId);
         setAvatar(data.avatar);
     }
@@ -76,7 +76,9 @@ const toolbar = () => {
     async function logout() {
         await fetch('http://localhost:3000/auth/logout', {
             method: 'GET',
+            credentials: 'include',
         })
+        localStorage.setItem('logged', 'false');
         setToken('');
         setAvatar(null);
     }

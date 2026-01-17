@@ -1,0 +1,25 @@
+#welcome {
+    position: absolute;
+    background: #111;
+    text-align: justify;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30%;
+    padding: 10px 0px 10px 20px;
+    border-radius: 10px;
+    color: #EA4335;
+    border: 1px solid #EA4335;
+    display: flex;
+}
+#welcome:hover .close {
+    opacity: 1;
+    cursor: pointer;
+}
+.close:hover {
+    background: #222 !important;
+}
+.toprow {
+    margin-left: 10px;
+    margin-right: 10px;
+}

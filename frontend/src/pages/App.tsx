@@ -5,6 +5,7 @@ import Topbar from '@/components/Topbar.tsx';
 import Toolbar from '@/components/Toolbar.tsx';
 import Forward from '@/components/Forward.tsx';
 import Chat from '@/components/Chat.tsx';
+import Welcome from '@/components/Welcome.tsx';
 
 import { useEffect } from 'react'
 import '../styles/App.css'
@@ -37,7 +38,10 @@ function App() {
     }, [editingProfile, settings])
 
     return (
-        <>
+        <>  
+            { /* WARNINGS */ }
+            <Welcome/>
+            
             {/* MENUS */}
 
             <Forward/>

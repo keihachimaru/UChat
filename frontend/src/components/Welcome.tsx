@@ -1,0 +1,31 @@
+import { useUserStore } from '@/stores/userStore';
+import '@/styles/Welcome.css';
+import { useState } from 'react';
+import { MdClose } from 'react-icons/md';
+
+const Welcome = () => {
+    const [show, setShow] = useState<Boolean>(localStorage.getItem('logged')!='true');
+    const token = useUserStore((s)=>s.token);
+
+    return !token && show && (
+        <div id="welcome">
+            <div className="welcome-contents">
+                Hi, in order to have your data saved you should
+                <a 
+                    href="http://localhost:3000/auth/google"
+                    style={{ marginLeft: '5px' }}
+                >login</a>
+            </div>
+            <div className="toprow">
+                <button 
+                    className="close"
+                    onClick={() => setShow(false)}
+                >
+                    <MdClose color="#EA4335" size={16}/>
+                </button>
+            </div>
+        </div>
+    )
+};
+
+export default Welcome;
