@@ -63,14 +63,29 @@ const toolbar = () => {
     }
 
     async function fetchProfile() {
-        const res = await fetch('http://localhost:3000/auth/me', {
-            method: 'GET',
-            credentials: 'include',
-        })
-        const data = await res.json();
-        localStorage.setItem('logged', 'true');
-        setToken(data.providerId);
-        setAvatar(data.avatar);
+        try {
+            const res = await fetch('http://localhost:3000/auth/me', {
+                method: 'GET',
+                credentials: 'include',
+            })
+            
+            if(res.status === 401) {
+                localStorage.setItem('logged', 'false');
+                return;
+            }
+            else if(res.status === 200) {
+                const data = await res.json();
+                localStorage.setItem('logged', 'true');
+                setToken(data.providerId);
+                setAvatar(data.avatar);
+                return;
+            }
+            console.warn(`Unexpected status: ${res.status}`);
+        }
+        catch (error) {
+            console.error('Profile fetch failed: ', error),
+            localStorage.setItem('logged', 'false');
+        }
     }
 
     async function logout() {

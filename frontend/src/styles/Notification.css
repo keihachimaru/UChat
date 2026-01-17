@@ -1,0 +1,52 @@
+.notification {
+    position: absolute;
+    background: #111;
+    text-align: justify;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30%;
+    padding: 10px 0px 10px 20px;
+    border-radius: 10px;
+    display: flex;
+    animation-name: move;
+    animation-duration: 1s;
+    animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    animation-fill-mode: forwards;
+}
+.notification.error {
+    color: #EA4335;
+    border: 1px solid #EA4335;
+}
+.notification.warning {
+    color: #FBBC04;
+    border: 1px solid #FBBC04;
+}
+.notification.neutral {
+    color: #4285F4;
+    border: 1px solid #4285F4;
+}
+.notification.success {
+    color: #34A853;
+    border: 1px solid #34A853;
+}
+
+@keyframes move {
+    0% {
+        top: 0px;
+    }
+    100% {
+        top: 50px;
+    }
+}
+.notification:hover .close {
+    opacity: 1;
+    cursor: pointer;
+}
+.close:hover {
+    background: #222 !important;
+}
+.toprow {
+    margin-left: 10px;
+    margin-right: 10px;
+}

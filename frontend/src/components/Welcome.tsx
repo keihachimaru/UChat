@@ -1,11 +1,16 @@
 import { useUserStore } from '@/stores/userStore';
 import '@/styles/Welcome.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MdClose } from 'react-icons/md';
+
 
 const Welcome = () => {
     const [show, setShow] = useState<Boolean>(localStorage.getItem('logged')!='true');
     const token = useUserStore((s)=>s.token);
+
+    useEffect(()=>{
+        setShow(localStorage.getItem('logged')!='true');
+    }, [token])
 
     return !token && show && (
         <div id="welcome">
