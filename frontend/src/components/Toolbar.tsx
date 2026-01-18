@@ -17,7 +17,7 @@ const toolbar = () => {
     const  setSelectedModel = useUiStore((s) => s.setSelectedModel);
     const  setEditingProfile = useUiStore((s) => s.setEditingProfile);
 
-    const [toolbar, setToolbar] = useState<boolean>(true);
+    const [toolbar, setToolbar] = useState<boolean>(false);
 
     const profiles = useUserStore((s) => s.profiles)
     const setProfiles = useUserStore((s) => s.setProfiles)

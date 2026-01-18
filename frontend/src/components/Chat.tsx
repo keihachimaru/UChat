@@ -11,7 +11,7 @@ import { IoMdShareAlt } from "react-icons/io";
 import ReactMarkdown from 'react-markdown';
 import { generateID } from '../utils/general.ts';
 import { sendMessageToAI } from '../services/aiServices.ts';
-import { capitalize, createChat } from '../utils/general.ts';
+import { capitalize } from '../utils/general.ts';
 import { useChatStore } from '@/stores/chatStores.ts';
 import { useMessageStore } from '@/stores/messageStores.ts';
 import { useUserStore } from '@/stores/userStore.ts';
@@ -21,6 +21,7 @@ import { modelDetails } from '@/constants/models.ts';
 import type { Rag, Message } from '@/types/index.ts';
 import '@/styles/Chat.css';
 import { useUiStore } from '@/stores/uiStore.ts';
+import { getChats, createChat } from '@/services/chatService.ts';
 
 const Chat = () => {
     const activeProfile = useUiStore((s) => s.activeProfile)
@@ -43,6 +44,7 @@ const Chat = () => {
     const pinMessage = useMessageStore((s) => s.pinMessage)
 
     const profiles = useUserStore((s) => s.profiles)
+    const token = useUserStore((s) => s.token)
 
     const modelsDetails = useAiStore((s) => s.modelsDetails)
 
@@ -109,15 +111,30 @@ const Chat = () => {
         } 
     }, [editingMessage])
 
-    function newChat(
+    useEffect(() => {
+        if(!token) return
+        
+        const load = async() => {
+            const chats = await getChats();
+            setChats(chats);
+        }
+
+        load();
+
+    }, [ token ])
+
+    async function newChat(
         chatName?: string,
     ) {
         const num = chats.filter(c => c.name.startsWith('New chat')).length
-        const newChat = createChat(
+        const newChat = await createChat(
+            localStorage.getItem('logged')=='true',
             chatName ? chatName : ('New chat' + (num > 0 ? ' ' + num : ''))
         );
-        setChats([...chats, newChat]);
-        setActiveChat(newChat.id)
+        if(newChat) {
+            setChats([...chats, newChat]);
+            setActiveChat(newChat.id)
+        }
     }
 
     async function sendMessage(

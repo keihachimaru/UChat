@@ -23,7 +23,7 @@ const Sidebar = () => {
     const deleteChat = useChatStore((s) => s.deleteChat)
     const deleteMessages = useMessageStore((s) => s.deleteMessages)
 
-    const [showSidebar, setShowSidebar] = useState<boolean>(false);
+    const [showSidebar, setShowSidebar] = useState<boolean>(true);
     const [editingChatName, setEditingChatName] = useState<number>(0);
     const [chatMenuId, setChatMenuId] = useState<number>(0);
 

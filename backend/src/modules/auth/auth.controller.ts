@@ -27,8 +27,17 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  getProfile(@Req() req) {
-    return req.user;
+  getProfile(@Req() req : 
+    Request & { 
+      user: { 
+        providerId: string
+        avatar: string
+      }
+    }) {
+    return {
+      providerId: req.user.providerId,
+      avatar: req.user.avatar,
+    };
   }
   
   @Get('logout')
