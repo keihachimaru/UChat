@@ -1,6 +1,6 @@
 import { MdClose, MdAdd } from 'react-icons/md';
 import { useChatStore } from '@/stores/chatStores';
-import { createChat } from '@/utils/general';
+import { createChat } from '@/services/chatService';
 import { useEffect, useState } from 'react';
 import '@/styles/Topbar.css';
 import { useUiStore } from '@/stores/uiStore';
@@ -14,15 +14,18 @@ const Topbar = () => {
 
     const [tabs, setTabs] = useState<number[]>([]);
     
-    function newChat(
+    async function newChat(
         chatName?: string,
     ) {
         const num = chats.filter(c => c.name.startsWith('New chat')).length
-        const newChat = createChat(
+        const newChat = await createChat(
+            localStorage.getItem('logged')=='true',
             chatName ? chatName : ('New chat' + (num > 0 ? ' ' + num : ''))
         );
-        setChats([...chats, newChat]);
-        setActiveChat(newChat.id)
+        if(newChat) {
+            setChats([...chats, newChat]);
+            setActiveChat(newChat.id)
+        }
     }
 
     function closeTab(event: React.MouseEvent | null, id: number) {

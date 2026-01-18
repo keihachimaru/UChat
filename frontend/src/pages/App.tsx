@@ -19,7 +19,7 @@ function App() {
 
     const settings = useUiStore((s) => s.settings);
     const setSettings = useUiStore((s) => s.setSettings);
-
+    
     // Event listeners
     useEffect(() => {
         const handleMouseUp = (e: MouseEvent) => {

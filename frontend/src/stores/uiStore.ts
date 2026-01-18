@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Message, Profile, Model } from '@/types/index';
 import { aiModels } from '@/constants/models';
+import { persist } from 'zustand/middleware';
 
 type uiStoreType = {
     activeChat: number | null,
@@ -21,21 +22,37 @@ type uiStoreType = {
     setReplying: (r: [Message, Profile | Model] | null) => void,
 }
 
-export const useUiStore = create<uiStoreType>((set)=>({
-    activeChat: null,
-    setActiveChat: (s: number | null) => set({ activeChat: s }),
-    editingProfile: null,
-    setEditingProfile: (s: number | null) => set({ editingProfile: s }),
-    settings: false,
-    setSettings: (s: boolean) => set({ settings: s }),
-    activeProfile: null,
-    setActiveProfile: (s: number | null) => set({ activeProfile: s }),
-    selectedModel: aiModels[0],
-    setSelectedModel: (s: string) => set({ selectedModel: s }),
-    forwarding: null,
-    setForwarding: (s: number[] | null) => set({ forwarding: s }),
-    forwardMenu: false,
-    setForwardMenu: (s: boolean) => set({ forwardMenu: s}),
-    replying: null,
-    setReplying: (s: [Message, Profile | Model] | null) => set({ replying: s})
-}))
+export const useUiStore = create<uiStoreType>()(
+    persist(
+        (set)=>({
+            activeChat: null,
+            setActiveChat: (s: number | null) => set({ activeChat: s }),
+            editingProfile: null,
+            setEditingProfile: (s: number | null) => set({ editingProfile: s }),
+            settings: false,
+            setSettings: (s: boolean) => set({ settings: s }),
+            activeProfile: null,
+            setActiveProfile: (s: number | null) => set({ activeProfile: s }),
+            selectedModel: aiModels[0],
+            setSelectedModel: (s: string) => set({ selectedModel: s }),
+            forwarding: null,
+            setForwarding: (s: number[] | null) => set({ forwarding: s }),
+            forwardMenu: false,
+            setForwardMenu: (s: boolean) => set({ forwardMenu: s}),
+            replying: null,
+            setReplying: (s: [Message, Profile | Model] | null) => set({ replying: s})
+        }),
+        {
+          name: "uiStore",
+          partialize: (state: uiStoreType) => ({
+            activeChat: state.activeChat,
+            editingProfile: state.editingProfile,
+            settings: state.settings,
+            activeProfile: state.activeProfile,
+            selectedModel: state.selectedModel,
+            forwarding: state.forwarding,
+            forwardMenu: state.forwardMenu,
+          }),
+        }
+    )
+);

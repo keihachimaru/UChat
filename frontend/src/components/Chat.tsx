@@ -403,7 +403,7 @@ const Chat = () => {
 
 
             {
-                activeChat && activeProfile &&
+                activeChat && activeProfile && chatsById[activeChat] &&
                 <>
                     <div
                         className="contents"
