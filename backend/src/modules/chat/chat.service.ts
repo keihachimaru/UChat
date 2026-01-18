@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateChatInput } from './dto/create-chat.input';
 import { InjectModel } from '@nestjs/mongoose';
 import { Chat } from './schema/chat.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { UpdateChatDto } from './dto/update-chat.dto';
 
 @Injectable()
@@ -32,5 +32,12 @@ export class ChatService {
       author: dto.author, 
       _id: dto.id,
     }, { name: dto.name }).exec();
+  }
+
+  async addMessage(chatId: string, messageId: Types.ObjectId) {
+    await this.chatModel.updateOne(
+      { _id: chatId }, 
+      { $push: { messageIds: messageId }}
+    ).exec()
   }
 }

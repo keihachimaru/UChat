@@ -22,6 +22,7 @@ import type { Rag, Message } from '@/types/index.ts';
 import '@/styles/Chat.css';
 import { useUiStore } from '@/stores/uiStore.ts';
 import { getChats, createChat } from '@/services/chatService.ts';
+import { getMessagesFromChat, sendMessageToChat } from '@/services/messageService.ts';
 
 const Chat = () => {
     const activeProfile = useUiStore((s) => s.activeProfile)
@@ -39,6 +40,7 @@ const Chat = () => {
     const addMessageToChat = useChatStore((s) => s.addMessageToChat)
 
     const messages = useMessageStore((s) => s.messages)
+    const setMessages = useMessageStore((s) => s.setMessages)
     const addMessage = useMessageStore((s) => s.addMessage)
     const updateMessageContents = useMessageStore((s) => s.updateMessageContents)
     const pinMessage = useMessageStore((s) => s.pinMessage)
@@ -122,6 +124,20 @@ const Chat = () => {
         load();
 
     }, [ token ])
+    
+    useEffect(() => {
+        if(!activeChat) return
+        const chat = chatsById[activeChat];
+        if(!chat) return
+        const notFetched = chat.messageIds.some(i => !messagesById[i])
+        if(notFetched) {
+            const load = async () => {
+                const msgs = await getMessagesFromChat(activeChat.toString());            
+                setMessages([... new Set([...messages, ...msgs])])
+            }
+            load();
+        }
+    }, [ activeChat, chats ])
 
     async function newChat(
         chatName?: string,
@@ -140,7 +156,7 @@ const Chat = () => {
     async function sendMessage(
         content: string,
     ) {
-        const message: Message = {
+        const messageDTO: Message = {
             id: generateID(),
             reply: replying ? replying[0].id : null,
             system: false,
@@ -150,7 +166,11 @@ const Chat = () => {
             timestamp: new Date().toString(),
         }
 
+        const message = await sendMessageToChat(activeChat!.toString(), messageDTO);
+        console.log(message)
+        
         if(replying) setReplying(null)
+        if(!message) return
 
         addMessage(message);
         addMessageToChat(activeChat!, message.id)

@@ -1,9 +1,6 @@
 import { IsBoolean, IsString, IsNumber } from "class-validator";
 
-export class CreateMessageDto {
-    @IsString()
-    chat: string;
-
+export class CreateMessageInput {
     @IsBoolean()
     system: boolean;
     
@@ -11,7 +8,7 @@ export class CreateMessageDto {
     content: string;
     
     @IsString()
-    model?: string;
+    aimodel?: string;
 
     @IsString()
     author?: string;
@@ -19,6 +16,12 @@ export class CreateMessageDto {
     @IsBoolean()
     pinned: boolean;
     
+    @IsString()
+    user: string;
+    
+    @IsString()
+    chat: string;
+
     @IsNumber()
     reply?: number;
 }
