@@ -21,4 +21,8 @@ export class ChatService {
       .sort({ createdAt: -1 })
       .exec();    
   }
+
+  async delete(author: string, id: string) {
+    return this.chatModel.deleteOne({ author: author, _id: id })
+  }
 }

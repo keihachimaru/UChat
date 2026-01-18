@@ -35,7 +35,7 @@ export async function createChat(isLoggedIn: boolean, name: string) {
                 'Content-Type': 'application/json',
             },
             credentials: 'include',
-                body: JSON.stringify({ name })
+            body: JSON.stringify({ name })
         })
         if(res.ok) {
             const data = await res.json();
@@ -50,4 +50,13 @@ export async function createChat(isLoggedIn: boolean, name: string) {
             return null;
         }
     }
+}
+
+export async function deleteChatById(id: string) {
+    const res = await fetch('http://localhost:3000/chat/delete/'+id, {
+        method: 'DELETE',
+        credentials: 'include',
+    })
+    const { success } = await res.json();
+    return success;
 }

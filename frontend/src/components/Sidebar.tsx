@@ -13,6 +13,7 @@ import { useChatStore } from '@/stores/chatStores.ts';
 import { useMessageStore } from '@/stores/messageStores';
 import '@/styles/Sidebar.css'
 import { useUiStore } from '@/stores/uiStore';
+import { deleteChatById } from '@/services/chatService';
 
 const Sidebar = () => {
     const activeChat = useUiStore((s) => s.activeChat);
@@ -84,20 +85,24 @@ const Sidebar = () => {
         setChatMenuId(0);
     }
 
-    function handleDeleteChat() {
+    async function handleDeleteChat() {
         const chat = chats.find(c=>c.id===chatMenuId)
         if(!chat) return
 
-        deleteMessages(chat.messageIds)
-        deleteChat(chatMenuId)
+        const success = await deleteChatById(chatMenuId.toString());
 
-        if(chatMenuId===activeChat) setActiveChat(null);
-        
-        const menu = document.getElementById('chat-menu');
-        if (!menu) return;
-        menu.classList.remove('visible');
-        chatMenuRef.current = null;
-        setChatMenuId(0);
+        if(success) {
+            deleteMessages(chat.messageIds)
+            deleteChat(chatMenuId)
+
+            if(chatMenuId===activeChat) setActiveChat(null);
+            
+            const menu = document.getElementById('chat-menu');
+            if (!menu) return;
+            menu.classList.remove('visible');
+            chatMenuRef.current = null;
+            setChatMenuId(0);
+        }
     }
 
     return (

@@ -37,4 +37,15 @@ export class ChatController {
     
     return chats;
   }
+
+  @Delete('delete/:id')
+  @UseGuards(AuthGuard('jwt'))
+  async delete(
+    @Req() req: Request & { user: { id: string }},
+    @Param('id') id: string,
+  ) {
+    const success = await this.chatService.delete(req.user.id, id);
+    
+    return { success: !!success.deletedCount };
+  }
 }
