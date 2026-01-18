@@ -13,7 +13,7 @@ import { useChatStore } from '@/stores/chatStores.ts';
 import { useMessageStore } from '@/stores/messageStores';
 import '@/styles/Sidebar.css'
 import { useUiStore } from '@/stores/uiStore';
-import { deleteChatById } from '@/services/chatService';
+import { deleteChatById, saveChatName } from '@/services/chatService';
 
 const Sidebar = () => {
     const activeChat = useUiStore((s) => s.activeChat);
@@ -179,9 +179,11 @@ const Sidebar = () => {
                                 value={c.name}
                                 readOnly={c.id !== editingChatName}
                                 onChange={(e) => updateChatName(c.id, e.target.value)}
-                                onBlur={() => {
-                                    setEditingChatName(0)
+                                onBlur={(e) => {
+                                    setEditingChatName(0);
+                                    saveChatName(c.id.toString(), e.target.value);
                                 }}
+                                onKeyDown={(e) => e.key==='Enter' && e.currentTarget.blur()}   
                             />
                         </div>
                         <button

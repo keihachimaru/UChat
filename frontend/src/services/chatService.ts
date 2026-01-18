@@ -60,3 +60,20 @@ export async function deleteChatById(id: string) {
     const { success } = await res.json();
     return success;
 }
+
+export async function saveChatName(id: string, value: string) {
+    const res = await fetch('http://localhost:3000/chat/update/'+id, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ value })
+    })
+
+    if (!res.ok) console.error('Failed to update chat name');
+    else { 
+        const { success } = await res.json();
+        return success;
+    }
+}

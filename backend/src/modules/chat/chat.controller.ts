@@ -6,6 +6,7 @@ import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { Auth } from '../auth/entities/auth.entity';
 
 @Controller('chat')
 export class ChatController {
@@ -47,5 +48,21 @@ export class ChatController {
     const success = await this.chatService.delete(req.user.id, id);
     
     return { success: !!success.deletedCount };
+  }
+
+  @Patch('update/:id')
+  @UseGuards(AuthGuard('jwt'))
+  async update(
+    @Req() req: Request & { user: { id: string }},
+    @Param('id') id: string,
+    @Body() body: { value: string }
+  ) {
+    const success = await this.chatService.updateName({
+      author: req.user.id,
+      id: id,
+      name: body.value,
+    })
+
+    return { success: !!success.modifiedCount };
   }
 }
