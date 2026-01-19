@@ -1,19 +1,19 @@
 export type Chat = {
-    id: number;
+    id: string;
     name: string;
-    messageIds: number[];
-    documentIds: number[];
+    messageIds: string[];
+    documentIds: string[];
 }
 
 export type Message = {
-    id: number;
+    id: string;
     system: boolean;
     content: string;
     model?: string;
     author?: number | null;
     pinned: boolean;
     timestamp: string;
-    reply: number | null;
+    reply: string | null;
 }
 
 export type Model = {

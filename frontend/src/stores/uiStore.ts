@@ -4,8 +4,8 @@ import { aiModels } from '@/constants/models';
 import { persist } from 'zustand/middleware';
 
 type uiStoreType = {
-    activeChat: number | null,
-    setActiveChat: (s: number | null) => void,
+    activeChat: string | null,
+    setActiveChat: (s: string | null) => void,
     editingProfile: number | null, 
     setEditingProfile: (s: number | null) => void,
     settings: boolean,
@@ -14,8 +14,8 @@ type uiStoreType = {
     setActiveProfile: (s: number | null) => void,
     selectedModel: string,
     setSelectedModel: (m: string) => void,    
-    forwarding: number[] | null,
-    setForwarding: (f: number[] | null) => void,
+    forwarding: string[] | null,
+    setForwarding: (f: string[] | null) => void,
     forwardMenu: boolean,
     setForwardMenu: (f: boolean) => void,
     replying: [Message, Profile | Model] | null,
@@ -26,7 +26,7 @@ export const useUiStore = create<uiStoreType>()(
     persist(
         (set)=>({
             activeChat: null,
-            setActiveChat: (s: number | null) => set({ activeChat: s }),
+            setActiveChat: (s: string | null) => set({ activeChat: s }),
             editingProfile: null,
             setEditingProfile: (s: number | null) => set({ editingProfile: s }),
             settings: false,
@@ -36,7 +36,7 @@ export const useUiStore = create<uiStoreType>()(
             selectedModel: aiModels[0],
             setSelectedModel: (s: string) => set({ selectedModel: s }),
             forwarding: null,
-            setForwarding: (s: number[] | null) => set({ forwarding: s }),
+            setForwarding: (s: string[] | null) => set({ forwarding: s }),
             forwardMenu: false,
             setForwardMenu: (s: boolean) => set({ forwardMenu: s}),
             replying: null,

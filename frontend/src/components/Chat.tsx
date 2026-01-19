@@ -51,14 +51,14 @@ const Chat = () => {
     const modelsDetails = useAiStore((s) => s.modelsDetails)
 
     const [messageValue, setMessageValue] = useState('');
-    const [messageMenuId, setMessageMenuId] = useState<number>(0);
+    const [messageMenuId, setMessageMenuId] = useState<string>('');
 
     const messageMenuRef = useRef<any>(null);
 
     const listenerFunc = (e: MouseEvent) => {
         if (!e.target) return;
 
-        const menu = document.getElementById('chat-menu');
+        const menu = document.getElementById('message-menu');
         if (menu && messageMenuRef.current) {
             if (
                 !menu.contains(e.target as Node) &&
@@ -67,14 +67,15 @@ const Chat = () => {
             ) {
                 menu.classList.remove('visible');
                 messageMenuRef.current = null;
-                setMessageMenuId(0);
+                setMessageMenuId('');
+                console.log('REMOVED')
                 document.removeEventListener("mouseup", listenerFunc)
             }
         }
     }
 
     const [thinking, setThinking] = useState<boolean>(false);
-    const [editingMessage, setEditingMessage] = useState<number | null>(null);
+    const [editingMessage, setEditingMessage] = useState<string | null>(null);
 
     const messagesById = useMemo(
         () => Object.fromEntries(messages.map(m => [m.id, m])),
@@ -157,7 +158,7 @@ const Chat = () => {
         content: string,
     ) {
         const messageDTO: Message = {
-            id: generateID(),
+            id: generateID().toString(),
             reply: replying ? replying[0].id : null,
             system: false,
             author: activeProfile,
@@ -180,7 +181,7 @@ const Chat = () => {
         if (profile.autoReply) triggerAIReply();
     }
 
-    function handleStreamChunk(chunk: string, replyId: number) {
+    function handleStreamChunk(chunk: string, replyId: string) {
         const lines = chunk.split("\n");
 
         for (const line of lines) {
@@ -234,7 +235,7 @@ const Chat = () => {
             const decoder = new TextDecoder();
 
             const reply: Message = {
-                id: generateID(),
+                id: generateID().toString(),
                 system: true,
                 reply: null,
                 content: '',
@@ -258,7 +259,7 @@ const Chat = () => {
         }
         else {
             const reply: Message = {
-                id: generateID(),
+                id: generateID().toString(),
                 system: true,
                 reply: null,
                 content: response.choices[0].message.content,
@@ -273,17 +274,16 @@ const Chat = () => {
         }
     }
 
-    function showMessageMenu(event: React.MouseEvent, id: number) {
+    function showMessageMenu(event: React.MouseEvent, id: string) {
         event.stopPropagation()
         const target = event.currentTarget
         const menu = document.getElementById('message-menu')
-
         if (!menu) return;
 
         if (target === messageMenuRef.current) {
             messageMenuRef.current = null
             menu.classList.remove('visible')
-            setMessageMenuId(0);
+            setMessageMenuId('');
         }
         else {
             const rect = target.getBoundingClientRect()
@@ -291,13 +291,14 @@ const Chat = () => {
             menu.style.top = `${rect.bottom + window.scrollY}px`;
             menu.style.left = `${rect.left + window.scrollX}px`;
             setMessageMenuId(id);
+            console.log(id);
             messageMenuRef.current = target
 
             document.addEventListener('mouseup', (e) => listenerFunc(e))
         }
     }
 
-    function getAuthor(id: number) {
+    function getAuthor(id: string) {
         const message =  messagesById[id];
         const author = message.system ? modelDetails[message.model!] : profilesById[message.author!]
         
@@ -311,10 +312,10 @@ const Chat = () => {
         if (!menu) return;
         menu.classList.remove('visible');
         messageMenuRef.current = null;
-        setMessageMenuId(0);
+        setMessageMenuId('');
     }
 
-    function changeForwarding(id: number) {
+    function changeForwarding(id: string) {
         if(!forwarding) return
         if(forwarding.includes(id)) {
             setForwarding(forwarding.filter(f => f!==id))
@@ -333,7 +334,7 @@ const Chat = () => {
         if (!menu) return;
         menu.classList.remove('visible');
         messageMenuRef.current = null;
-        setMessageMenuId(0);
+        setMessageMenuId('');
     }
 
     function autoResize(textarea: HTMLTextAreaElement) {
@@ -358,12 +359,15 @@ const Chat = () => {
         if (!menu) return;
         menu.classList.remove('visible');
         messageMenuRef.current = null;
-        setMessageMenuId(0);
+        setMessageMenuId('');
     }
 
     function replyTo() {
+        console.log(messageMenuId)
+        console.log(messagesById)
         const message = messagesById[messageMenuId];
         const author = message.system ? modelDetails[message.model!] : profilesById[message.author!]
+
         setReplying([message, author]);
 
         document.getElementById("chat-input")?.focus()
@@ -372,7 +376,7 @@ const Chat = () => {
         if (!menu) return;
         menu.classList.remove('visible');
         messageMenuRef.current = null;
-        setMessageMenuId(0);
+        setMessageMenuId('');
     }
 
     return (

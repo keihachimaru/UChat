@@ -19,6 +19,6 @@ export type Chunk = {
 }
 
 export type Document = {
-    id: number;
+    id: string;
     source: string;
 }
