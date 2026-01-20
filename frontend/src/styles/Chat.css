@@ -486,3 +486,22 @@
     opacity: .1;
   }
 }
+
+.input textarea {
+  outline: none;
+  background: none;
+  border: none;
+  resize: none;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  border-radius: 5px;
+  flex-shrink: 0;
+  overflow: hidden;
+  height: auto;
+  field-sizing: content;
+  padding: 0;
+  box-sizing: border-box;
+  min-width: calc(100% - 30px);
+  max-width: calc(100% - 30px);
+  font-size: 1em;
+  line-height: 1.65;
+}

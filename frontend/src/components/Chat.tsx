@@ -609,14 +609,14 @@ const Chat = () => {
                                 </button>
                             </div>)
                             :(<div className="lower">
-                                <input
+                                <textarea
                                     id="chat-input"
                                     placeholder="Ask something ..."
                                     autoFocus
                                     value={messageValue}
                                     onChange={e => setMessageValue(e.target.value)}
                                     onKeyDown={e => {
-                                        if (e.key === 'Enter' && messageValue.trim()) {
+                                        if (e.key === 'Enter' && !e.shiftKey && messageValue.trim()) {
                                             sendMessage(messageValue);
                                             setMessageValue('');
                                         }
