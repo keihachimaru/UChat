@@ -88,14 +88,6 @@ const Notification = () => {
             <div className="welcome-contents">
                 { message }
             </div>
-            <div className="toprow">
-                <button 
-                    className="close"
-                    onClick={() => setShow(false)}
-                >
-                    <MdClose color="#fff" size={16}/>
-                </button>
-            </div>
         </div>
     );
 };
