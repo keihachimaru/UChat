@@ -12,6 +12,13 @@
   }
 }
 
+:root {
+    --primary: #4285F4;
+    --error: #EA4335;
+    --warning: #FBBC04;
+    --success: #34A853;
+}
+
 .main {
     height: 100%;
     flex: 1;
@@ -51,7 +58,7 @@
     margin-top: auto;
 }
 .close-solid:hover {
-    background: #EA4335;
+    background: var(--error);
 }
 .save-solid {
     background: #34A85380;

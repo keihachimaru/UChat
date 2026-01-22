@@ -50,7 +50,7 @@ const toolbar = () => {
             autoReply: false,
         }
         addProfile(newProfile)
-        setActiveProfile(newProfile.id)
+        //setActiveProfile(newProfile.id)
 
         requestAnimationFrame(() => {
             const contents = document.querySelector('.profiles');
@@ -102,21 +102,15 @@ const toolbar = () => {
     }
 
     useEffect(() => {
-        if (profiles.length === 0) {
-            const newProfile = {
-                id: generateID(),
-                name: 'New profile',
-                color: randomHex(),
-                temperature: 1.0,
-                stream: true,
-                maxTokens: 100,
-                autoReply: false,
-            }
-            setProfiles([newProfile])
-            setActiveProfile(newProfile.id)
+      const loadProfile = async () => {
+        await fetchProfile();
+        if (profiles && profiles.length === 0) {
+          newProfile();
         }
-        fetchProfile();
-    }, [])
+      };
+
+      loadProfile();
+    }, []); 
 
     return (
         <div
@@ -171,7 +165,7 @@ const toolbar = () => {
                                     key={p.id}
                                     className={["profile", p.id === activeProfile ? "active" : ""].join(" ")}
                                     onClick={() => setActiveProfile(p.id)}
-                                    onDoubleClick={() => setToolbar(!toolbar)}
+                                    onDoubleClick={() => setEditingProfile(p.id)}
                                     style={{ 'background': p.color }}
                                 >
                                     {p.name[0]}

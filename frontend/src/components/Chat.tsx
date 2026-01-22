@@ -34,7 +34,6 @@ const Chat = () => {
     const setActiveChat = useUiStore((s) => s.setActiveChat)
     const replying = useUiStore((s) => s.replying)
     const setReplying = useUiStore((s) => s.setReplying)
-    const reset = useUiStore((s) => s.reset);
 
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats);
@@ -324,8 +323,6 @@ const Chat = () => {
             setForwarding([...forwarding, id])
         }
     }
-
-    
 
     function editMessage() {
         setEditingMessage(messageMenuId)
@@ -630,6 +627,13 @@ const Chat = () => {
                         }
                     </div>
                 </>
+            }
+            {
+                activeChat && !activeProfile && chatsById[activeChat] &&
+                <div className="no-active-profile">
+                    <strong>No active profile</strong>
+                    <p>Please activate a profile clicking on the '+' icon on the right toolbar</p>
+                </div>
             }
             {
                 !activeChat &&

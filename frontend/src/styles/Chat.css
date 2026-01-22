@@ -66,13 +66,13 @@
     background: #33333380;
 }
 .message-row:has(.forwardTick:checked) {
-    border: 1px solid #4285F4;
+    border: 1px solid var(--primary);
 }
 
 .forwardTick {
     height: 18px;
     width: 20px;
-    accent-color: #4285F4;
+    accent-color: var(--primary);
     align-self: center;
     margin-left: 20px;
     cursor: pointer;
@@ -96,7 +96,7 @@
 .message.pinned::before {
     content: '';
     position: absolute;
-    background: #EA4335;
+    background: var(--error);
     top: 0;
     bottom: 0;
     width: 5px;
@@ -504,4 +504,25 @@
   max-width: calc(100% - 30px);
   font-size: 1em;
   line-height: 1.65;
+}
+
+.no-active-profile {
+  align-self: center;
+  margin: auto;
+  background: #111;
+  padding: 10px 20px 10px 20px;
+  border-radius: 10px;
+  border: 2px solid var(--error);
+  aspect-ratio: 1;
+  width: 180px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+.no-active-profile strong {
+  color: var(--error);;
+}
+.no-active-profile p {
+  text-align: center;
 }

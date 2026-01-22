@@ -22,7 +22,7 @@ export async function getChats() {
 export async function createChat(isLoggedIn: boolean, name: string) {
     if(!isLoggedIn) {
         return {
-            id: generateID(),
+            id: generateID().toString(),
             name: name,
             messageIds: [],
             documentIds: [],

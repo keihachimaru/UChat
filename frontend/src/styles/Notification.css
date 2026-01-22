@@ -15,16 +15,16 @@
     animation-fill-mode: forwards;
 }
 .notification.error {
-    color: #EA4335;
-    border: 1px solid #EA4335;
+    color: var(--error);
+    border: 1px solid var(--error);
 }
 .notification.warning {
     color: #FBBC04;
     border: 1px solid #FBBC04;
 }
 .notification.neutral {
-    color: #4285F4;
-    border: 1px solid #4285F4;
+    color: var(--primary);
+    border: 1px solid var(--primary);
 }
 .notification.success {
     color: #34A853;
