@@ -25,8 +25,8 @@ const Sidebar = () => {
     const deleteMessages = useMessageStore((s) => s.deleteMessages)
 
     const [showSidebar, setShowSidebar] = useState<boolean>(true);
-    const [editingChatName, setEditingChatName] = useState<number>(0);
-    const [chatMenuId, setChatMenuId] = useState<number>(0);
+    const [editingChatName, setEditingChatName] = useState<string>('');
+    const [chatMenuId, setChatMenuId] = useState<string>('');
 
     const chatMenuRef = useRef<HTMLElement>(null);
 
@@ -42,13 +42,13 @@ const Sidebar = () => {
             ) {
                 menu.classList.remove('visible');
                 chatMenuRef.current = null;
-                setChatMenuId(0);
+                setChatMenuId('');
                 document.removeEventListener("mouseup", listenerFunc)
             }
         }
     }
 
-    function showMenu(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) {
+    function showMenu(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) {
         event.stopPropagation();
         const target = event.currentTarget as HTMLElement
         const menu = document.getElementById('chat-menu')
@@ -57,7 +57,7 @@ const Sidebar = () => {
         if (target === chatMenuRef.current) {
             chatMenuRef.current = null
             menu.classList.remove('visible')
-            setChatMenuId(0);
+            setChatMenuId('');
         }
         else {
             const rect = target.getBoundingClientRect()
@@ -82,7 +82,7 @@ const Sidebar = () => {
         if (!menu) return;
         menu.classList.remove('visible');
         chatMenuRef.current = null;
-        setChatMenuId(0);
+        setChatMenuId('');
     }
 
     async function handleDeleteChat() {
@@ -101,7 +101,7 @@ const Sidebar = () => {
             if (!menu) return;
             menu.classList.remove('visible');
             chatMenuRef.current = null;
-            setChatMenuId(0);
+            setChatMenuId('');
         }
     }
 
@@ -180,7 +180,7 @@ const Sidebar = () => {
                                 readOnly={c.id !== editingChatName}
                                 onChange={(e) => updateChatName(c.id, e.target.value)}
                                 onBlur={(e) => {
-                                    setEditingChatName(0);
+                                    setEditingChatName('');
                                     saveChatName(c.id.toString(), e.target.value);
                                 }}
                                 onKeyDown={(e) => e.key==='Enter' && e.currentTarget.blur()}   

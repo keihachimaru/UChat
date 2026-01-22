@@ -23,6 +23,7 @@ C. Message Controls
 - Pin messages
 - Edit user messages
 - Forward message to another conversation
+- Continue conversation in other chat
 
 D. Document & Knowledge Management
 

@@ -78,6 +78,9 @@
     box-sizing: border-box;
     flex-shrink: 0;
     cursor: pointer;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 .profile.long {
     width: 50%;

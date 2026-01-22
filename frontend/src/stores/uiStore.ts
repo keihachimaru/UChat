@@ -56,7 +56,6 @@ export const useUiStore = create<uiStoreType>()(
             reset: () => {
                 localStorage.removeItem("uiStore");
                 set(getDefaultUiState())
-                console.log('loogged out');
             }
         }),
         {

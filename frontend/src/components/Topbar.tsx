@@ -43,6 +43,12 @@ const Topbar = () => {
     }, [chats])
 
     useEffect(()=> {
+        if(tabs) {
+            const filtered = tabs.filter(t =>
+                chats.find(c => c.id === t)
+            )
+            if(filtered.length != tabs.length) setTabs(filtered)
+        }
         if(tabs.length && !activeChat) {
             setActiveChat(tabs[0])
         }
