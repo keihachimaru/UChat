@@ -22,6 +22,7 @@ import { modelDetails } from '@/constants/models.ts';
 const Sidebar = () => {
     const activeChat = useUiStore((s) => s.activeChat);
     const setActiveChat = useUiStore((s) => s.setActiveChat);
+    const removeTab = useUiStore((s) => s.removeTab)
     
     const token = useUserStore((s) => s.token);
 
@@ -110,6 +111,7 @@ const Sidebar = () => {
         if(success) {
             deleteMessages(chat.messageIds)
             deleteChat(chatMenuId)
+            removeTab(chatMenuId)
 
             if(chatMenuId===activeChat) setActiveChat(null);
             

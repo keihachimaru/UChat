@@ -18,7 +18,7 @@ import { useUserStore } from '@/stores/userStore.ts';
 import { useAiStore } from '@/stores/aiStore.ts';
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { modelDetails } from '@/constants/models.ts';
-import type { Rag, Message } from '@/types/index.ts';
+import type { Rag, Message, Chat } from '@/types/index.ts';
 import '@/styles/Chat.css';
 import { useUiStore } from '@/stores/uiStore.ts';
 import { getChats, createChat } from '@/services/chatService.ts';
@@ -34,6 +34,8 @@ const Chat = () => {
     const setActiveChat = useUiStore((s) => s.setActiveChat)
     const replying = useUiStore((s) => s.replying)
     const setReplying = useUiStore((s) => s.setReplying)
+    const setTabs = useUiStore((s) => s.setTabs)
+    const tabs = useUiStore((s) => s.tabs)
 
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats);
@@ -120,6 +122,7 @@ const Chat = () => {
         const load = async() => {
             const chats = await getChats();
             setChats(chats);
+            if(chats) setTabs(tabs.filter(t => chats.find((c : Chat)=>c.id==t)))
         }
 
         load();
@@ -622,7 +625,7 @@ const Chat = () => {
                                     className="reply"
                                     onClick={() => triggerAIReply()}
                                 >
-                                    <MdSend size={24} color="fff" />
+                                    <MdSend size={20} color="fff" />
                                 </button>
                             </div>)
                         }

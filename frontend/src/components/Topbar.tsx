@@ -1,18 +1,20 @@
 import { MdClose, MdAdd } from 'react-icons/md';
 import { useChatStore } from '@/stores/chatStores';
 import { createChat } from '@/services/chatService';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import '@/styles/Topbar.css';
 import { useUiStore } from '@/stores/uiStore';
 
 const Topbar = () => {
     const activeChat = useUiStore((s) => s.activeChat);
     const setActiveChat = useUiStore((s) => s.setActiveChat);
+    const tabs = useUiStore((s) => s.tabs);
+    const setTabs = useUiStore((s) => s.setTabs);
+    const addTab = useUiStore((s) => s.addTab);
+    const removeTab = useUiStore((s) => s.removeTab);
     
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats);
-
-    const [tabs, setTabs] = useState<string[]>([]);
     
     async function newChat(
         chatName?: string,
@@ -35,27 +37,17 @@ const Topbar = () => {
         else if (tabs[index - 1]) setActiveChat(tabs[index - 1])
         else setActiveChat(null)
 
-        setTabs(tabs.filter(t => t != id));
+        removeTab(id)
     }
 
     useEffect(()=> {
-        setTabs(prev => prev.filter(t => chats.find(c=>c.id==t)))
-    }, [chats])
-
-    useEffect(()=> {
-        if(tabs) {
-            const filtered = tabs.filter(t =>
-                chats.find(c => c.id === t)
-            )
-            if(filtered.length != tabs.length) setTabs(filtered)
-        }
         if(tabs.length && !activeChat) {
             setActiveChat(tabs[0])
         }
     }, [tabs])
 
     useEffect(() => {
-        if (activeChat && !tabs.includes(activeChat)) setTabs([...tabs, activeChat])
+        if (activeChat && !tabs.includes(activeChat)) addTab(activeChat)
     }, [activeChat])
 
     return (

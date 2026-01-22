@@ -7,7 +7,7 @@ export async function getMessagesFromChat(id: string) {
     })
     if(res.ok) {
         const data = await res.json();
-        return data.map((m : Chat & { _id : string }) => ({ ...m, id: m._id}))
+        return data.map((m : Chat & { _id : string, createdAt: string }) => ({ ...m, id: m._id, timestamp: m.createdAt }))
     }
     return []
 }

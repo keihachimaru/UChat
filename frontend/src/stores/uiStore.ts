@@ -21,6 +21,10 @@ type uiStoreType = {
     replying: [Message, Profile | Model] | null,
     setReplying: (r: [Message, Profile | Model] | null) => void,
     reset: () => void,
+    tabs: string[],
+    setTabs: (tabs: string[]) => void,
+    removeTab: (t: string) => void,
+    addTab: (t:string) => void,
 }
 
 const getDefaultUiState = () => ({
@@ -56,7 +60,15 @@ export const useUiStore = create<uiStoreType>()(
             reset: () => {
                 localStorage.removeItem("uiStore");
                 set(getDefaultUiState())
-            }
+            },
+            tabs: [],
+            setTabs: (t: string[]) => set({ tabs: t }),
+            removeTab: (tab: string) => set((state) => ({
+                tabs: state.tabs.filter(t => t!==tab)
+            })),
+            addTab: (tab: string) => set((state) => ({
+                tabs: [...state.tabs, tab]
+            }))
         }),
         {
           name: "uiStore",
@@ -68,6 +80,7 @@ export const useUiStore = create<uiStoreType>()(
             selectedModel: state.selectedModel,
             forwarding: state.forwarding,
             forwardMenu: state.forwardMenu,
+            tabs: state.tabs,
           }),
         }
     )
