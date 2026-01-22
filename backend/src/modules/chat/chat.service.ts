@@ -52,4 +52,5 @@ export class ChatService {
       { $push: { messageIds: messageId }}
     ).exec()
   }
+
 }

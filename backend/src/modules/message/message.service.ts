@@ -10,7 +10,13 @@ export class MessageService {
   constructor(
     @InjectModel(Message.name) private messageModel: Model<Message>
   ) {}
-  create(dto: CreateMessageInput) {
-    return this.messageModel.create(dto)
+  async create(dto: CreateMessageInput) {
+    return await this.messageModel.create(dto)
+  }
+  async getMessagesFromChat(user: string, chat: string) {
+    return await this.messageModel.find({
+      user: user,
+      chat: chat,
+    }).exec()
   }
 }

@@ -3,6 +3,7 @@ import {
   Body, Patch, Param, Delete, Req 
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
+import { MessageService } from '../message/message.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -10,7 +11,9 @@ import { Auth } from '../auth/entities/auth.entity';
 
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService, 
+    private readonly messageService: MessageService) {}
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
@@ -78,5 +81,18 @@ export class ChatController {
     })
 
     return { val: success.pinned };
+  }
+
+  @Get(':id/messages')
+  @UseGuards(AuthGuard('jwt'))
+  async getMessagesFromChat(
+    @Req() req: Request & { user: { id: string }},
+    @Param('id') id: string,
+  ) {
+    const messages = await this.messageService.getMessagesFromChat(
+      req.user.id,
+      id,
+    )
+    return messages;
   }
 }

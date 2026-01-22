@@ -223,6 +223,7 @@ const Chat = () => {
         const key = modelsDetails.find(m => m.name === model)!.key
         if (!key) {
             alert('No key set')
+            setThinking(false);
             return
         }
 
@@ -429,7 +430,7 @@ const Chat = () => {
                         {
                             chatsById[activeChat].messageIds.map(id => {
                                 const m: Message = messagesById[id]
-                                return (
+                                return !!m && (
                                     <div className="message-row" key={id}>
                                         <div
                                             className={[
