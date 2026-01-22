@@ -14,6 +14,9 @@ export class Chat extends Document {
 
     @Prop({ type: [Types.ObjectId], ref: 'Document', default: [] })
     documentIds: string[];
+    
+    @Prop({ default: false })
+    pinned: boolean;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);

@@ -1,19 +1,43 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useUserStore } from "@/stores/userStore";
 import '@/styles/ProfileDetails.css';
 import { useUiStore } from '@/stores/uiStore';
+import type { Profile } from '@/types/index';
+import { modifyProfile } from '@/services/userService';
 
 const ProfileDetails = () => {
     const editingProfile = useUiStore((s) => s.editingProfile);
     const setEditingProfile= useUiStore((s) => s.setEditingProfile);
+
     
     const profiles = useUserStore((s) => s.profiles)
-    const updateProfileField = useUserStore((s) => s.updateProfileField)
+    const updateProfile = useUserStore((s) => s.updateProfile)
+    const dummyProfile = useUserStore((s) => s.dummyProfile)
+    const [oldVal, setOldVal] = useState<Profile>(dummyProfile);
 
     const profilesById = useMemo(
         () => Object.fromEntries(profiles.map(p => [p.id, p])),
         [profiles]
     );
+
+    useEffect(() => {
+        if(editingProfile) {
+            const profile = profilesById[editingProfile]
+            if (profile) setOldVal(profilesById[editingProfile])
+        }
+    }, [editingProfile, profiles])
+
+    function handleUpdateProfileField(field: string, value: any) {
+        if (oldVal) setOldVal({ ...oldVal, [field]: value})
+    }
+
+    async function saveUpdatedProfile() {
+        if(!oldVal) return
+        const newVal = await modifyProfile(oldVal);
+        if(newVal) { 
+            updateProfile(newVal)
+        }
+    }
 
     return editingProfile && (
         <div
@@ -27,9 +51,9 @@ const ProfileDetails = () => {
                 >
                     Editing
                     <span
-                        style={{ color: profilesById[editingProfile].color, fontWeight: 'bold', filter: 'brightness(2)' }}
+                        style={{ color: oldVal.color, fontWeight: 'bold', filter: 'brightness(2)' }}
                     >
-                        {profilesById[editingProfile].name + ' '}
+                        {oldVal.name + ' '}
                     </span>
                 </div>
                 <div className="field">
@@ -37,9 +61,9 @@ const ProfileDetails = () => {
                     <input
                         id="profile-name"
                         type="text"
-                        value={profilesById[editingProfile].name}
+                        value={oldVal.name}
                         onChange={e =>
-                            updateProfileField(editingProfile, 'name', e.target.value)
+                            handleUpdateProfileField('name', e.target.value)
                         }
                     />
                 </div>
@@ -57,17 +81,16 @@ const ProfileDetails = () => {
                             min={0}
                             max={2}
                             step={0.1}
-                            value={profilesById[editingProfile].temperature}
+                            value={oldVal.temperature}
                             onChange={e =>
-                                updateProfileField(
-                                    editingProfile,
+                                handleUpdateProfileField(
                                     'temperature',
                                     Number(e.target.value)
                                 )
                             }
                         />
                         <span className="value">
-                            {profilesById[editingProfile].temperature.toFixed(1)}
+                            {oldVal.temperature.toFixed(1)}
                         </span>
                     </div>
                 </div>
@@ -77,10 +100,9 @@ const ProfileDetails = () => {
                     <input
                         id="stream"
                         type="checkbox"
-                        checked={profilesById[editingProfile].stream}
+                        checked={oldVal.stream}
                         onChange={e =>
-                            updateProfileField(
-                                editingProfile,
+                            handleUpdateProfileField(
                                 'stream',
                                 e.target.checked
                             )
@@ -93,10 +115,9 @@ const ProfileDetails = () => {
                     <input
                         id="autoreply"
                         type="checkbox"
-                        checked={profilesById[editingProfile].autoReply}
+                        checked={oldVal.autoReply}
                         onChange={e =>
-                            updateProfileField(
-                                editingProfile,
+                            handleUpdateProfileField(
                                 'autoReply',
                                 e.target.checked
                             )
@@ -111,22 +132,31 @@ const ProfileDetails = () => {
                         type="number"
                         step="1"
                         min={1}
-                        value={profilesById[editingProfile].maxTokens}
+                        value={oldVal.maxTokens}
                         onChange={e =>
-                            updateProfileField(
-                                editingProfile,
+                            handleUpdateProfileField(
                                 'maxTokens',
                                 Number(e.target.value)
                             )
                         }
                     />
                 </div>
-                <button
-                    className="close-solid"
-                    onClick={() => setEditingProfile(null)}
+                <div
+                    className="button-row"
                 >
-                    Close
-                </button>
+                    <button
+                        className="close-solid"
+                        onClick={() => setEditingProfile(null)}
+                    >
+                        Close
+                    </button>
+                    <button
+                        className="save-solid"
+                        onClick={() => saveUpdatedProfile()}
+                    >
+                        Save 
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -1,9 +1,9 @@
-export type Profile = {
-    id: string;
+export class CreateProfileInput {
+    user: string;
     name: string;
     color: string;
     temperature: number;
     stream: boolean;
-    maxTokens?: number;
+    maxTokens: number;
     autoReply: boolean;
 }

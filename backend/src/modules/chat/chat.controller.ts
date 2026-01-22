@@ -50,9 +50,9 @@ export class ChatController {
     return { success: !!success.deletedCount };
   }
 
-  @Patch('update/:id')
+  @Patch('rename/:id')
   @UseGuards(AuthGuard('jwt'))
-  async update(
+  async rename(
     @Req() req: Request & { user: { id: string }},
     @Param('id') id: string,
     @Body() body: { value: string }
@@ -64,5 +64,19 @@ export class ChatController {
     })
 
     return { success: !!success.modifiedCount };
+  }
+
+  @Patch('pin/:id')
+  @UseGuards(AuthGuard('jwt'))
+  async pin(
+    @Req() req: Request & { user: { id: string }},
+    @Param('id') id: string,
+  ) {
+    const success = await this.chatService.pin({
+      author: req.user.id,
+      id: id,
+    })
+
+    return { val: success.pinned };
   }
 }

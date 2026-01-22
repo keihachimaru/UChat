@@ -63,12 +63,17 @@
     align-items: center;
     margin-top: 10px;
     transition: .1s;
+    cursor: pointer;
 }
 .chatCard input {
     outline: none;
     border: none;
+    width: calc(100% - 10px);
     background: transparent;
     font-size: .9em;
+}
+.chatCard input:not(:focus) {
+    cursor: pointer;
 }
 .chatCard:hover, .chatCard:focus-within {
     border-color: #555;
@@ -83,6 +88,36 @@
     background: #333;
 }
 
+.chatCard.pinned {
+    border: 1px solid var(--primary);
+}
+.chatCard.pinned .more {
+    opacity: 1;
+}
+.chatCard.pinned .more svg {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%)
+}
+.chatCard.pinned .more {
+    position: relative;
+    min-width: 20px !important;
+    height: 20px;
+}
+/* Hide first SVG when not hovered */
+.chatCard.pinned:not(:hover) .more svg:first-of-type {
+  opacity: 0;
+  pointer-events: none; /* optional: prevent clicks */
+}
+
+/* Hide last SVG when hovered */
+.chatCard.pinned:hover .more svg:last-of-type {
+  opacity: 0;
+  pointer-events: none;
+}
+
 
 .search {
     height: 60px;
@@ -95,12 +130,21 @@
     height: 40px;
     border: 1px solid #777;
     outline: none;
-    width: 200px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 250px;
     border-radius: 20px;
-    padding: 3px 15px 3px 15px;
+    padding: 3px 35px 3px 15px;
     box-sizing: border-box;
     background: transparent;
+}
+.search .close {
+    cursor: pointer;
+    display: inline-block;
+    opacity: 1;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: -20px;
+    transform: translateX(-10px);
 }
 
 #chat-menu {

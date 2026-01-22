@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProfileDto } from './dto/create-profile.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+import { CreateProfileInput } from './dto/create-profile.input';
+import { UpdateProfileInput } from './dto/update-profile.input';
+import { Profile } from './schema/profile.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Types } from 'mongoose'
 
 @Injectable()
 export class ProfileService {
-  create(createProfileDto: CreateProfileDto) {
-    return 'This action adds a new profile';
+  constructor(
+    @InjectModel(Profile.name) private profileModel: Model<Profile>
+  ) {}
+  async create(createProfileInput: CreateProfileInput) {
+    return await this.profileModel.create(createProfileInput);
   }
 
-  findAll() {
-    return `This action returns all profile`;
+  async findAll(id: string) {
+    return await this.profileModel
+    .find({ user: id })
+    .sort({ createdAt: 1 })
+    .exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
+  async removeById(id: string, uid: string) {
+    return await this.profileModel.deleteOne({ user: uid, _id: id })
   }
 
-  update(id: number, updateProfileDto: UpdateProfileDto) {
-    return `This action updates a #${id} profile`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+  async updateById(id: string, user: string, input: UpdateProfileInput) {
+    return await this.profileModel.findOneAndUpdate(
+      { user: user, _id: new Types.ObjectId(id), }, 
+      { $set: { ...input }}, 
+      { new: true }
+    ).exec();
   }
 }

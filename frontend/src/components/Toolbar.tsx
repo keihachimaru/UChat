@@ -4,9 +4,9 @@ import { BsLayoutSidebarReverse } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
 import { aiModels, modelDetails } from '@/constants/models';
 import { useUserStore } from '@/stores/userStore';
-import { generateID, randomHex } from '@/utils/general';
 import '@/styles/Toolbar.css';
 import { useUiStore } from '@/stores/uiStore';
+import { createProfile, eliminateProfile, getProfiles } from '@/services/userService';
 
 const toolbar = () => {
     const  activeProfile = useUiStore((s) => s.activeProfile);
@@ -29,9 +29,10 @@ const toolbar = () => {
     const avatar = useUserStore((s) => s.avatar);
     const setAvatar = useUserStore((s) => s.setAvatar);
 
-    function handleDeleteProfile(id: number) {
+    async function handleDeleteProfile(id: string) {
         if (activeProfile === id) setActiveProfile(null)
-        deleteProfile(id)
+        const success = await eliminateProfile(id);
+        if (success) deleteProfile(id)
     }
 
     function handleLogin() {
@@ -39,18 +40,10 @@ const toolbar = () => {
         else window.location.href = 'http://localhost:3000/auth/google'
     }
 
-    function newProfile() {
-        const newProfile = {
-            id: generateID(),
-            name: 'New profile',
-            color: randomHex(),
-            temperature: 1.0,
-            stream: true,
-            maxTokens: 100,
-            autoReply: false,
-        }
+    async function newProfile() {
+        const newProfile = await createProfile(localStorage.getItem('logged')==='true');
         addProfile(newProfile)
-        //setActiveProfile(newProfile.id)
+        setActiveProfile(newProfile.id)
 
         requestAnimationFrame(() => {
             const contents = document.querySelector('.profiles');
@@ -104,8 +97,13 @@ const toolbar = () => {
     useEffect(() => {
       const loadProfile = async () => {
         await fetchProfile();
-        if (profiles && profiles.length === 0) {
-          newProfile();
+        const logged = localStorage.getItem('logged')==='true'
+        const savedProfiles = await getProfiles();
+        if (!logged || savedProfiles.length === 0) {
+          await newProfile();
+        }
+        else {
+            setProfiles(savedProfiles)
         }
       };
 

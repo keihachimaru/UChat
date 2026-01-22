@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateProfileDto } from './create-profile.dto';
-
-export class UpdateProfileDto extends PartialType(CreateProfileDto) {}
+export class UpdateProfileDto {
+    id: string;
+    name: string;
+    color: string;
+    temperature: number;
+    stream: boolean;
+    maxTokens: number;
+    autoReply: boolean;
+}

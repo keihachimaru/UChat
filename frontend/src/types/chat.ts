@@ -3,6 +3,7 @@ export type Chat = {
     name: string;
     messageIds: string[];
     documentIds: string[];
+    pinned: boolean;
 }
 
 export type Message = {
@@ -10,7 +11,7 @@ export type Message = {
     system: boolean;
     content: string;
     model?: string;
-    author?: number | null;
+    author?: string | null;
     pinned: boolean;
     timestamp: string;
     reply: string | null;

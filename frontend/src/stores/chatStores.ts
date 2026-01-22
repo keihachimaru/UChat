@@ -8,6 +8,7 @@ type ChatStore = {
     updateChatName: (chatId: string, value: string) => void,
     deleteChat: (chatId: string) => void,
     forwardMessagesToChats: (targetChats: string[], sourceMessages: string[]) => void,
+    togglePinChat: (chatId: string) => void,
 }
 
 export const useChatStore = create<ChatStore>((set) => ({
@@ -40,6 +41,14 @@ export const useChatStore = create<ChatStore>((set) => ({
             chats: state.chats.map(chat =>
                 targetChats.includes(chat.id)
                 ? { ...chat, messageIds: [...new Set([...chat.messageIds, ...sourceMessages])] }
+                : chat
+            )
+        })),
+    togglePinChat: (chatId: string) =>
+        set(state => ({
+            chats: state.chats.map(chat =>
+                chat.id === chatId
+                ? { ...chat, pinned: !chat.pinned }
                 : chat
             )
         })),

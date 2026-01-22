@@ -11,11 +11,18 @@
     box-sizing: border-box;
     padding-right: 30px;
     padding-left: 30px;
-    min-height: 75%;
-    max-height: calc(fit-content);
     aspect-ratio: 1;
     align-items: center;
+    width: 500px;
+    max-width: 90%;
+    height: min(580px, 90vh);
+    overflow-y: auto;
+    box-sizing: border-box;
 }
+.edit-profile::-webkit-scrollbar {
+    display: none;
+}
+
 .edit-profile .title {
     height: 80px;
     font-size: 2em;
@@ -81,4 +88,12 @@
 /* Firefox */
 .edit-profile input[type="number"] {
   -moz-appearance: textfield;
+}
+.button-row {
+    border-top: 1px solid #333;
+    padding-top: 20px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

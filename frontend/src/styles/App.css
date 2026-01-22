@@ -54,8 +54,7 @@
     cursor: pointer;
     margin-bottom: 10px;
     flex-shrink: 0;
-    margin-left: auto;
-    margin-top: auto;
+    max-width: 200px;
 }
 .close-solid:hover {
     background: var(--error);
@@ -70,9 +69,10 @@
     font-size: 1em;
     margin-bottom: 10px;
     flex-shrink: 0;
+    max-width: 200px;
 }
-.save:hover {
-    background: #34A853;
+.save-solid:hover {
+    background: var(--success);
 }
 
 .close {

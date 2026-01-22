@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { BsLayoutSidebar } from 'react-icons/bs';
 import { 
     MdOutlineMoreHoriz, 
@@ -7,28 +7,44 @@ import {
     MdInfoOutline, 
     MdArchive,
     MdDeleteOutline,
-    MdPushPin
+    MdPushPin,
+    MdClose,
 } from 'react-icons/md';
 import { useChatStore } from '@/stores/chatStores.ts';
 import { useMessageStore } from '@/stores/messageStores';
 import '@/styles/Sidebar.css'
 import { useUiStore } from '@/stores/uiStore';
-import { deleteChatById, saveChatName } from '@/services/chatService';
+import { deleteChatById, saveChatName, pinChat } from '@/services/chatService';
+import { useUserStore } from '@/stores/userStore';
+import type { Chat, Message } from '@/types/index';
+import { modelDetails } from '@/constants/models.ts';
 
 const Sidebar = () => {
     const activeChat = useUiStore((s) => s.activeChat);
     const setActiveChat = useUiStore((s) => s.setActiveChat);
+    
+    const token = useUserStore((s) => s.token);
 
     const chats = useChatStore((s) => s.chats);
     const updateChatName = useChatStore((s) => s.updateChatName)
     const deleteChat = useChatStore((s) => s.deleteChat)
+    const togglePinChat = useChatStore((s) => s.togglePinChat)
     const deleteMessages = useMessageStore((s) => s.deleteMessages)
+
+    const messages = useMessageStore((s) => s.messages);
+    const profiles = useUserStore((s) => s.profiles)
 
     const [showSidebar, setShowSidebar] = useState<boolean>(true);
     const [editingChatName, setEditingChatName] = useState<string>('');
     const [chatMenuId, setChatMenuId] = useState<string>('');
 
     const chatMenuRef = useRef<HTMLElement>(null);
+    const [ query, setQuery ] = useState<string>('');
+
+    const profilesById = useMemo(
+        () => Object.fromEntries(profiles.map(p => [p.id, p])),
+        [profiles]
+    );
 
     const listenerFunc = (e: MouseEvent) => {
         if (!e.target) return;
@@ -104,34 +120,103 @@ const Sidebar = () => {
             setChatMenuId('');
         }
     }
+    
+    function queryMatch(name: string) {
+        return name.toLowerCase().startsWith(query.toLowerCase()) || name.includes(query);
+    }
+    
+    function handlePinChat() {
+        togglePinChat(chatMenuId)
+        if(token) pinChat(chatMenuId)
+
+        const menu = document.getElementById('chat-menu');
+        if (!menu) return;
+        menu.classList.remove('visible');
+        chatMenuRef.current = null;
+        setChatMenuId('');
+    }
+    
+    function chatToText(chat: Chat) {
+        const chatMessages = chat.messageIds.map(id => messages.find(m => m.id===id) || null)
+        let res = "# "+chat.name+"\n\n";
+        chatMessages.forEach((msg : Message | null) => {
+            if(msg) res += `[${new Date(msg.timestamp).toLocaleTimeString()}] ${getAuthor(msg)} : ${msg.content}\n`
+        })
+        return res;
+    }
+
+    function getAuthor(message: Message) {
+        const author = message.system ? modelDetails[message.model!] : profilesById[message.author!]
+        
+        return author.name.trim()
+    }
+
+    function downloadChat() {
+        const chat = chats.find(c => c.id === chatMenuId);
+        if(!chat) return;
+
+        const blob = new Blob([chatToText(chat)], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${chat.name || "chat"}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        const menu = document.getElementById('chat-menu');
+        if (!menu) return;
+        menu.classList.remove('visible');
+        chatMenuRef.current = null;
+        setChatMenuId('');
+    }
 
     return (
     <div className={["sidebar", showSidebar?"":"hidden"].join(" ")}>
         <div id="chat-menu">
-            <div className="option" onClick={() => editChatName()}>
+            <div 
+                className="option" 
+                onClick={() => editChatName()}
+            >
                 <MdEdit size={20} color="#ffffff" />
                 Rename
             </div>
 
-            <div className="option disabled">
+            <div 
+                className={["option", token?"":"disabled"].join(" ")}
+                onClick={() => downloadChat()}
+            >
                 <MdFileDownload size={20} color="#ffffff" />
                 Export
             </div>
 
-            <div className="option disabled">
+            <div className={["option", token?"":"disabled"].join(" ")}>
                 <MdInfoOutline size={20} color="#ffffff" />
                 View Details
             </div>
 
-            <div className="option disabled">
+            <div className={["option", token?"":"disabled"].join(" ")}>
                 <MdArchive size={20} color="#ffffff" />
                 Archive
             </div>
 
-            <div className="option disabled">
-                <MdPushPin size={20} color="#ffffff" />
-                Pin
-            </div>
+            {
+                chats.find(c => c.id===chatMenuId)?.pinned ?
+                <div 
+                    className="option" 
+                    style={{ color: 'var(--primary)', fontWeight: 'bold' }}
+                    onClick={() => { handlePinChat()}}
+                >
+                    <MdPushPin size={20} color="var(--primary)" />
+                    Unpin
+                </div>
+                :
+                <div className="option" onClick={() => { handlePinChat()}}>
+                    <MdPushPin size={20} color="#ffffff" />
+                    Pin
+                </div>
+            }
 
             <div
                 className="option"
@@ -157,18 +242,31 @@ const Sidebar = () => {
         >
             <input
                 placeholder="Search ..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
             />
+            { query.length>0 && 
+                <button
+                    className="close"
+                    onClick={()=>{setQuery('')}}
+                >
+                    <MdClose size={20} color="fff"/>
+                </button>
+            }
         </div>
         <div
             className="chatList"
         >
             {
-                chats.map((c) => (
+                chats
+                    .filter((c) => queryMatch(c.name))
+                    .sort((a, b) => Number(b.name.startsWith(query)) + Number(b.pinned)*10 - Number(a.name.startsWith(query)) -  Number(a.pinned)*10)
+                    .map((c) => (
                     <div
                         className={[
                             "chatCard",
-                            c.id === activeChat ?
-                                "active" : ""
+                            c.id === activeChat ? "active" : "",
+                            c.pinned ? "pinned" : ""
                         ].join(" ")}
                         key={c.id}
                         onClick={() => c.id == activeChat ? setActiveChat(null) : setActiveChat(c.id)}
@@ -191,6 +289,7 @@ const Sidebar = () => {
                             onClick={(e) => showMenu(e, c.id)}
                         >
                             <MdOutlineMoreHoriz size={20} color="white" />
+                            { c.pinned && <MdPushPin size={18} color="var(--primary)"/> }
                         </button>
                     </div>
                 ))

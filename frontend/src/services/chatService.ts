@@ -1,4 +1,5 @@
 import { generateID } from "@/utils/general";
+import type { Chat } from '@/types/index';
 
 export async function getChats() {
     const res = await fetch('http://localhost:3000/chat/all', {
@@ -7,11 +8,12 @@ export async function getChats() {
     })
     if(res.status === 200) {
         const data = await res.json();
-        return data.map((c: any) => ({
+        return data.map((c: any) : Chat => ({
            id: c._id,
            name: c.name, 
            messageIds: c.messageIds || [],
            documentIds: c.documentIds || [],
+           pinned: c.pinned,
         }));
     }
     else {
@@ -26,6 +28,7 @@ export async function createChat(isLoggedIn: boolean, name: string) {
             name: name,
             messageIds: [],
             documentIds: [],
+            pinned: false,
         } 
     }
     else {
@@ -44,6 +47,7 @@ export async function createChat(isLoggedIn: boolean, name: string) {
                 name: data.name,
                 messageIds: [],
                 documentIds: [],
+                pinned: false,
             };
         }
         else {
@@ -62,7 +66,7 @@ export async function deleteChatById(id: string) {
 }
 
 export async function saveChatName(id: string, value: string) {
-    const res = await fetch('http://localhost:3000/chat/update/'+id, {
+    const res = await fetch('http://localhost:3000/chat/rename/'+id, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -75,5 +79,18 @@ export async function saveChatName(id: string, value: string) {
     else { 
         const { success } = await res.json();
         return success;
+    }
+}
+
+export async function pinChat(id: string) {
+    const res = await fetch(`http://localhost:3000/chat/pin/${id}`, {
+        method: 'PATCH',
+        credentials: 'include',
+    })
+
+    if(!res.ok) console.error('Failed to pin chat');
+    else {
+        const { val } = await res.json();
+        return val;
     }
 }

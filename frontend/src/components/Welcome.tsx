@@ -18,7 +18,7 @@ const Welcome = () => {
                 Hi, in order to have your data saved you should
                 <a 
                     href="http://localhost:3000/auth/google"
-                    style={{ marginLeft: '5px' }}
+                    style={{ marginLeft: '5px', display: 'inline-block' }}
                 >login</a>
             </div>
             <div className="toprow">

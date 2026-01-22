@@ -62,8 +62,7 @@ const Chat = () => {
         if (menu && messageMenuRef.current) {
             if (
                 !menu.contains(e.target as Node) &&
-                !messageMenuRef.current.contains(e.target as Node) &&
-                e.target !== messageMenuRef.current
+                !messageMenuRef.current.contains(e.target as Node) && e.target !== messageMenuRef.current
             ) {
                 menu.classList.remove('visible');
                 messageMenuRef.current = null;
@@ -612,6 +611,7 @@ const Chat = () => {
                                     onChange={e => setMessageValue(e.target.value)}
                                     onKeyDown={e => {
                                         if (e.key === 'Enter' && !e.shiftKey && messageValue.trim()) {
+                                            e.preventDefault()
                                             sendMessage(messageValue);
                                             setMessageValue('');
                                         }

@@ -8,24 +8,38 @@ type UserStore = {
     setToken: (t: string) => void,
     setAvatar: (a: string | null) => void,
     addProfile: (profile: Profile) => void,
-    deleteProfile: (profile: number) => void,
-    updateProfileField: (id: number, field: string, value: any) => void,
+    deleteProfile: (profile: string) => void,
+    updateProfileField: (id: string, field: string, value: any) => void,
     setProfiles: (profiles: Profile[]) => void,
+    updateProfile: (updated: Profile) => void,
+    dummyProfile: () => Profile,
 }
 
 export const useUserStore = create<UserStore>((set) => ({
     profiles: [],
     token: null,
     avatar: null,
+    dummyProfile: () => {
+        const dummy : Profile = {
+            id: '', 
+            name: 'Default',
+            color: '#fff',
+            temperature: 1,
+            stream: true,
+            maxTokens: 100,
+            autoReply: true,
+        }
+        return dummy;
+    },
     setToken: (t: string | null) => set({ token : t }),
     setAvatar: (a: string | null) => set({ avatar: a }),
     addProfile: (p: Profile) => set(state => ({
         profiles: [...state.profiles, p]
     })),
-    deleteProfile: (pId: number) => set(state => ({
+    deleteProfile: (pId: string) => set(state => ({
         profiles: state.profiles.filter(p => p.id !== pId)
     })),
-    updateProfileField: (id: number, field: string, value: any) => set(state => ({
+    updateProfileField: (id: string, field: string, value: any) => set(state => ({
         profiles: state.profiles.map(p =>
             p.id === id
             ? { ...p, [field]: value}
@@ -33,5 +47,11 @@ export const useUserStore = create<UserStore>((set) => ({
         )
     })),
     setProfiles: (profiles: Profile[]) => set({ profiles }),
-
+    updateProfile: (updated: Profile) => set(state => ({
+        profiles: state.profiles.map(p =>
+            p.id===updated.id
+            ? updated
+            : p
+        )
+    }))
 }))
