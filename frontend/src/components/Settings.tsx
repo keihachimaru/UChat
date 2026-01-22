@@ -62,7 +62,6 @@ const Settings = () => {
                         </div>
                     )
                 }
-                <div style={{ flex: 1 }}></div>
                 <div
                     className="button-row"
                 >

@@ -1,6 +1,7 @@
 .settings {
-    background: #222;
+    z-index: 10;
     user-select: none;
+    background: #222;
     border-radius: 30px;
     border: 2px solid #333;
     display: flex;
@@ -10,18 +11,24 @@
     box-sizing: border-box;
     padding-right: 30px;
     padding-left: 30px;
-    height: 75%;
-    max-height: calc(fit-content);
     aspect-ratio: 1;
     align-items: center;
-    z-index: 10;
+    width: 500px;
+    max-width: 90%;
+    height: min(400px, 90vh);
+    overflow-y: auto;
+    box-sizing: border-box;
 }
+.settings::-webkit-scrollbar {
+    display: none;
+}
+
 .settings .title, .forward-menu .title{
-    height: 50px;
-    font-size: 1.5em;
+    height: 80px;
+    font-size: 2em;
     display: flex;
     justify-content: center;
-    align-items: flex-end;
+    align-items: center;
     gap: 10px;
     padding-bottom: 10px;
 }
@@ -60,9 +67,14 @@
 }
 
 .button-row {
-    width: 100%;
-    gap: 30px;
+    margin-top: 50px;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+    flex: 1;
     display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-evenly;
 }
 
 .option {
