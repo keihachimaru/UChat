@@ -16,6 +16,7 @@ const toolbar = () => {
     const  selectedModel = useUiStore((s) => s.selectedModel);
     const  setSelectedModel = useUiStore((s) => s.setSelectedModel);
     const  setEditingProfile = useUiStore((s) => s.setEditingProfile);
+    const reset = useUiStore((s) => s.reset);
 
     const [toolbar, setToolbar] = useState<boolean>(false);
 
@@ -71,6 +72,7 @@ const toolbar = () => {
             
             if(res.status === 401) {
                 localStorage.setItem('logged', 'false');
+                reset();
                 return;
             }
             else if(res.status === 200) {
@@ -96,6 +98,7 @@ const toolbar = () => {
         localStorage.setItem('logged', 'false');
         setToken('');
         setAvatar(null);
+        reset();
     }
 
     useEffect(() => {

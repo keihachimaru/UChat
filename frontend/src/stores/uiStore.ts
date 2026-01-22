@@ -20,7 +20,19 @@ type uiStoreType = {
     setForwardMenu: (f: boolean) => void,
     replying: [Message, Profile | Model] | null,
     setReplying: (r: [Message, Profile | Model] | null) => void,
+    reset: () => void,
 }
+
+const getDefaultUiState = () => ({
+    activeChat: null,
+    editingProfile: null,
+    settings: false,
+    activeProfile: null,
+    selectedModel: aiModels[0],
+    forwarding: null,
+    forwardMenu: false,
+    replying: null,
+});
 
 export const useUiStore = create<uiStoreType>()(
     persist(
@@ -40,7 +52,12 @@ export const useUiStore = create<uiStoreType>()(
             forwardMenu: false,
             setForwardMenu: (s: boolean) => set({ forwardMenu: s}),
             replying: null,
-            setReplying: (s: [Message, Profile | Model] | null) => set({ replying: s})
+            setReplying: (s: [Message, Profile | Model] | null) => set({ replying: s}),
+            reset: () => {
+                localStorage.removeItem("uiStore");
+                set(getDefaultUiState())
+                console.log('loogged out');
+            }
         }),
         {
           name: "uiStore",

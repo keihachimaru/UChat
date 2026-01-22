@@ -6,7 +6,6 @@ export async function getMessagesFromChat(id: string) {
         credentials: 'include'
 
     })
-    console.log(res);
     return []
 }
 

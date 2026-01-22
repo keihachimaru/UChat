@@ -4,7 +4,7 @@ import '@/styles/Forward.css';
 import { useUiStore } from "@/stores/uiStore";
 
 const Forward = () => {
-    const [forwardTo, setForwardTo] = useState<number[]>([]);
+    const [forwardTo, setForwardTo] = useState<string[]>([]);
 
     const forwarding = useUiStore((s) => s.forwarding);
     const setForwarding = useUiStore((s) => s.setForwarding);
@@ -14,7 +14,7 @@ const Forward = () => {
     const chats = useChatStore((s) => s.chats);
     const forwardMessagesToChats = useChatStore((s) => s.forwardMessagesToChats)
     
-    function changeForwardTo(id: number) {
+    function changeForwardTo(id: string) {
         if(forwardTo.includes(id)) {
             setForwardTo(forwardTo.filter(f => f!==id))
         }

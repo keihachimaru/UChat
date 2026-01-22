@@ -34,6 +34,7 @@ const Chat = () => {
     const setActiveChat = useUiStore((s) => s.setActiveChat)
     const replying = useUiStore((s) => s.replying)
     const setReplying = useUiStore((s) => s.setReplying)
+    const reset = useUiStore((s) => s.reset);
 
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats);
@@ -68,7 +69,6 @@ const Chat = () => {
                 menu.classList.remove('visible');
                 messageMenuRef.current = null;
                 setMessageMenuId('');
-                console.log('REMOVED')
                 document.removeEventListener("mouseup", listenerFunc)
             }
         }
@@ -115,7 +115,9 @@ const Chat = () => {
     }, [editingMessage])
 
     useEffect(() => {
-        if(!token) return
+        if(!token) {
+            return
+        }
         
         const load = async() => {
             const chats = await getChats();
@@ -123,7 +125,6 @@ const Chat = () => {
         }
 
         load();
-
     }, [ token ])
     
     useEffect(() => {
@@ -168,7 +169,6 @@ const Chat = () => {
         }
 
         const message = await sendMessageToChat(activeChat!.toString(), messageDTO);
-        console.log(message)
         
         if(replying) setReplying(null)
         if(!message) return
@@ -291,7 +291,7 @@ const Chat = () => {
             menu.style.top = `${rect.bottom + window.scrollY}px`;
             menu.style.left = `${rect.left + window.scrollX}px`;
             setMessageMenuId(id);
-            console.log(id);
+            (id);
             messageMenuRef.current = target
 
             document.addEventListener('mouseup', (e) => listenerFunc(e))
@@ -363,8 +363,6 @@ const Chat = () => {
     }
 
     function replyTo() {
-        console.log(messageMenuId)
-        console.log(messagesById)
         const message = messagesById[messageMenuId];
         const author = message.system ? modelDetails[message.model!] : profilesById[message.author!]
 

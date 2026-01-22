@@ -12,7 +12,7 @@ const Topbar = () => {
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats);
 
-    const [tabs, setTabs] = useState<number[]>([]);
+    const [tabs, setTabs] = useState<string[]>([]);
     
     async function newChat(
         chatName?: string,
@@ -28,7 +28,7 @@ const Topbar = () => {
         }
     }
 
-    function closeTab(event: React.MouseEvent | null, id: number) {
+    function closeTab(event: React.MouseEvent | null, id: string) {
         if (event) event.stopPropagation();
         let index = tabs.indexOf(id)
         if (tabs[index + 1]) setActiveChat(tabs[index + 1])

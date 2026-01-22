@@ -14,8 +14,6 @@ const Settings = () => {
 
     function saveKeys() {
         for (const model of aiModels) {
-            console.log(model)
-            console.log(modelsDetails.find(m => m.name === model)!.key || '')
             localStorage.setItem(model, modelsDetails.find(m => m.name === model)!.key || '')
         }
     }

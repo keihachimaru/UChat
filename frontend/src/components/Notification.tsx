@@ -21,7 +21,6 @@ const Notification = () => {
     const token = useUserStore((s) => s.token);
 
     useEffect(()=> {
-        console.log(token)
         if(token===null) return;
         if(token) {
             setNotifications(prev => [
