@@ -1,7 +1,7 @@
 import { useUserStore } from '@/stores/userStore';
 import { useState, useEffect, useRef } from 'react';
 import '@/styles/Notification.css';
-import { MdClose } from 'react-icons/md';
+import { useUiStore } from '@/stores/uiStore';
 
 type Notification = {
     type: string;
@@ -12,33 +12,25 @@ const Notification = () => {
     // neutral, warning, error, success
     const [type, setType] = useState<string>('neutral');
     const [message, setMessage] = useState<string>('');
-    const [notifications, setNotifications] = useState<Notification[]>([]);
     const [show, setShow] = useState<Boolean>(false);
     const [idx, setIdx] = useState<number>(0);
     const runningRef = useRef(false);
     const timeoutRefs = useRef<any[]>([]);
+    
+    const notifications = useUiStore((s) => s.globalNotifications)
+    const addNotification = useUiStore((s) => s.addNotification)
 
     const token = useUserStore((s) => s.token);
 
     useEffect(()=> {
         if(token===null) return;
         if(token) {
-            setNotifications(prev => [
-                ...prev,
-                { 
-                    type: 'success',
-                    message: 'Successfully logged in!'
-                }
-            ])
         }
         if(!token) {
-            setNotifications(prev => [
-                ...prev,
-                { 
-                    type: 'warning',
-                    message: 'User logged out!'
-                }
-            ])
+            addNotification({ 
+                type: 'warning',
+                message: 'User logged out!'
+            })
         }
     }, [token])
     

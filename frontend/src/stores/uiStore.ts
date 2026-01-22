@@ -3,6 +3,11 @@ import type { Message, Profile, Model } from '@/types/index';
 import { aiModels } from '@/constants/models';
 import { persist } from 'zustand/middleware';
 
+type Notification = {
+    type: string;
+    message: string;   
+}
+
 type uiStoreType = {
     activeChat: string | null,
     setActiveChat: (s: string | null) => void,
@@ -25,6 +30,8 @@ type uiStoreType = {
     setTabs: (tabs: string[]) => void,
     removeTab: (t: string) => void,
     addTab: (t:string) => void,
+    globalNotifications: Notification[];
+    addNotification: (n: Notification) => void,
 }
 
 const getDefaultUiState = () => ({
@@ -68,7 +75,12 @@ export const useUiStore = create<uiStoreType>()(
             })),
             addTab: (tab: string) => set((state) => ({
                 tabs: [...state.tabs, tab]
+            })),
+            globalNotifications: [],
+            addNotification: (n : Notification) => set((state) => ({
+                globalNotifications: [...state.globalNotifications, n],
             }))
+
         }),
         {
           name: "uiStore",

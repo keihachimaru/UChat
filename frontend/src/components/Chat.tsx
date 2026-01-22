@@ -36,6 +36,7 @@ const Chat = () => {
     const setReplying = useUiStore((s) => s.setReplying)
     const setTabs = useUiStore((s) => s.setTabs)
     const tabs = useUiStore((s) => s.tabs)
+    const addNotification = useUiStore((s) => s.addNotification)
 
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats);
@@ -225,8 +226,11 @@ const Chat = () => {
 
         const key = modelsDetails.find(m => m.name === model)!.key
         if (!key) {
-            alert('No key set')
             setThinking(false);
+            addNotification({ 
+                type: 'error',
+                message: `No API key set for ${model}!`
+            })
             return
         }
 
