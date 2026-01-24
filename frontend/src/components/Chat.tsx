@@ -5,8 +5,9 @@ import {
     MdDeleteOutline,
     MdChevronRight,
     MdSend,
-    MdReply
+    MdReply,
 } from 'react-icons/md';
+import { FaRegStopCircle } from "react-icons/fa";
 import { IoMdShareAlt } from "react-icons/io";
 import ReactMarkdown from 'react-markdown';
 import { generateID } from '../utils/general.ts';
@@ -57,6 +58,10 @@ const Chat = () => {
     const [messageMenuId, setMessageMenuId] = useState<string>('');
 
     const messageMenuRef = useRef<any>(null);
+
+    const abortRef = useRef<AbortController | null>(null);
+    const readerRef = useRef<ReadableStreamDefaultReader | null>(null);
+    const [cancelable, setCancelable] = useState<boolean>(false);
 
     const listenerFunc = (e: MouseEvent) => {
         if (!e.target) return;
@@ -200,6 +205,16 @@ const Chat = () => {
         }
     }
 
+    function stopGeneration() {
+        abortRef.current?.abort();
+        readerRef.current?.cancel();
+
+        abortRef.current = null;
+        readerRef.current = null;
+        setThinking(false)
+        setCancelable(false);
+    }
+
     async function triggerAIReply() {
         setThinking(true)
         if (messages.length === 0 || !selectedModel) return;
@@ -211,7 +226,7 @@ const Chat = () => {
             "content": m.content
         }))
         const temperature = profilesById[activeProfile!].temperature
-        const maxTokens = profilesById[activeProfile!].maxTokens
+        const maxTokens = profilesById[activeProfile!].maxTokens || 100
         const stream = profilesById[activeProfile!].stream
 
         const context: Rag | null = null;
@@ -234,10 +249,18 @@ const Chat = () => {
             return
         }
 
-        const response = await sendMessageToAI(request, key)
+        abortRef.current = new AbortController()
+        setCancelable(true)
+        const response = await sendMessageToAI(
+            request, 
+            key, 
+            abortRef.current.signal
+        );
 
         if (stream) {
             const reader = response.body.getReader();
+            readerRef.current = reader;
+            
             const decoder = new TextDecoder();
 
             const reply: Message = {
@@ -255,13 +278,15 @@ const Chat = () => {
 
             let done = false;
             while (!done) {
+                if(abortRef.current?.signal.aborted) break;
+                
                 const { value, done: doneReading } = await reader.read();
                 done = doneReading;
 
                 const chunk = decoder.decode(value, { stream: true });
-
                 handleStreamChunk(chunk, reply.id);
             }
+            readerRef.current = null;
         }
         else {
             const reply: Message = {
@@ -625,6 +650,14 @@ const Chat = () => {
                                         }
                                     }}
                                 />
+
+                                <button
+                                    className={["reply", cancelable ? "" : "disabled"].join(" ")}
+                                    onClick={() => stopGeneration()}
+                                >
+                                    <FaRegStopCircle size={20} color="fff" />
+                                </button>
+
                                 <button
                                     className="reply"
                                     onClick={() => triggerAIReply()}

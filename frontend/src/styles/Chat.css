@@ -438,6 +438,7 @@
     cursor: pointer;
     margin-left: 10px;
     transition: opacity .2s;
+    flex-shrink: 0;
 }
 .reply:hover {
     background: #444;

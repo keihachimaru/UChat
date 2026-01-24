@@ -1,18 +1,34 @@
-import { AIRequest } from '@/types'
+import type { DeepSeekRequest } from "@/types";
 
-export async function sendMessageToAI(request, key) {
+type AIRequest = {
+  model: string,
+  conversation: any[],
+  temperature: number,
+  maxTokens: number,
+  stream: boolean,
+  rag: string | null
+}
+
+export async function sendMessageToAI(
+  request: AIRequest, 
+  key: string, 
+  signal?: AbortSignal
+) {
   switch(request.model) {
     case 'deepseek':
-      return handleDeepseek(request, key)
+      return handleDeepseek(request, key, signal)
     case 'gemini':
-      return handleGemini(request, key);
+      return handleGemini(request, key, signal);
     default:
       throw new Error(`Unsupported model: ${request.model}`);
   }
 }
 
-export async function handleDeepseek(request, token) {
-    let context = '';
+export async function handleDeepseek(
+  request: AIRequest, 
+  token: string, 
+  signal?: AbortSignal 
+) {
     if (request.rag?.length) {
         // context = await calculateRAG(rag);
         console.log(request.rag)
@@ -25,6 +41,7 @@ export async function handleDeepseek(request, token) {
         max_tokens: request.maxTokens,
         stream: request.stream,
         // context: request.context
+        signal
     }, token);
 
     return res;
@@ -32,8 +49,9 @@ export async function handleDeepseek(request, token) {
 
 export async function fetchDeepSeek(
   request: DeepSeekRequest,
-  token: string
-): Promise<DeepSeekResponse> {
+  token: string,
+  signal?: AbortSignal
+) {
 
   const response = await fetch(
     'https://api.deepseek.com/chat/completions',
@@ -44,6 +62,7 @@ export async function fetchDeepSeek(
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(request),
+      signal: signal?signal:null
     }
   );
 
@@ -56,8 +75,11 @@ export async function fetchDeepSeek(
   else return response.json();
 }
 
-export async function handleGemini(request, apiKey) {
-  let context = "";
+export async function handleGemini(
+  request: AIRequest,
+  apiKey: string,
+  signal?: AbortSignal
+) {
   
   // If you want to support RAG later:
   if (request.rag?.length) {
@@ -78,13 +100,18 @@ export async function handleGemini(request, apiKey) {
       stream: request.stream,
       // You could pass context here if you build RAG
     },
-    apiKey
+    apiKey,
+    signal
   );
 
   return res;
 }
 
-export async function fetchGeminiAPI(request, apiKey) {
+export async function fetchGeminiAPI(
+  request: DeepSeekRequest, 
+  apiKey: string, 
+  signal?: AbortSignal
+) {
 
   const response = await fetch(
     "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
@@ -95,6 +122,7 @@ export async function fetchGeminiAPI(request, apiKey) {
         "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify(request),
+      signal: signal
     }
   );
 
