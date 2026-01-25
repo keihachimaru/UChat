@@ -42,12 +42,14 @@ const Chat = () => {
     const chats = useChatStore((s) => s.chats);
     const setChats = useChatStore((s) => s.setChats);
     const addMessageToChat = useChatStore((s) => s.addMessageToChat)
+    const deleteMessageFromChat = useChatStore((s) => s.deleteMessageFromChat)
 
     const messages = useMessageStore((s) => s.messages)
     const setMessages = useMessageStore((s) => s.setMessages)
     const addMessage = useMessageStore((s) => s.addMessage)
     const updateMessageContents = useMessageStore((s) => s.updateMessageContents)
     const pinMessage = useMessageStore((s) => s.pinMessage)
+    const deleteMessages = useMessageStore((s) => s.deleteMessages)
 
     const profiles = useUserStore((s) => s.profiles)
     const token = useUserStore((s) => s.token)
@@ -382,6 +384,18 @@ const Chat = () => {
         setEditingMessage(null)
     }
 
+    function handleDeleteMessage() {
+        if(!activeChat) return
+        deleteMessages([messageMenuId]);
+        deleteMessageFromChat(activeChat, messageMenuId)
+
+        const menu = document.getElementById('message-menu');
+        if (!menu) return;
+        menu.classList.remove('visible');
+        messageMenuRef.current = null;
+        setMessageMenuId('');
+    }
+
     function handlePinMessage() {
         pinMessage(messageMenuId)
         const menu = document.getElementById('message-menu');
@@ -445,7 +459,7 @@ const Chat = () => {
                 <div
                     className="option"
                     style={{ color: '#ea4335', fontWeight: 'bold' }}
-                    onClick={() => handlePinMessage()}
+                    onClick={() => handleDeleteMessage()}
                 >
                     <MdDeleteOutline size={20} color="#ea4335" />
                     Delete
@@ -462,6 +476,7 @@ const Chat = () => {
                         {
                             chatsById[activeChat].messageIds.map(id => {
                                 const m: Message = messagesById[id]
+                                console.log(m)
                                 return !!m && (
                                     <div className="message-row" key={id}>
                                         <div

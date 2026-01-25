@@ -9,6 +9,7 @@ type ChatStore = {
     deleteChat: (chatId: string) => void,
     forwardMessagesToChats: (targetChats: string[], sourceMessages: string[]) => void,
     togglePinChat: (chatId: string) => void,
+    deleteMessageFromChat: (chatId: string, m: string) => void,
 }
 
 export const useChatStore = create<ChatStore>((set) => ({
@@ -52,4 +53,12 @@ export const useChatStore = create<ChatStore>((set) => ({
                 : chat
             )
         })),
+    deleteMessageFromChat: (chatId: string, m: string) =>
+        set(state => ({
+            chats: state.chats.map(chat =>
+                chat.id === chatId
+                ? { ... chat, messageIds: chat.messageIds.filter(msg => msg!=m)}
+                : chat
+            )
+        }))
 }));

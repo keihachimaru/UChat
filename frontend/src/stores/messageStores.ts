@@ -19,7 +19,12 @@ export const useMessageStore = create<MessageStore>((set) => ({
         messages: [...state.messages, message]
     })),
     deleteMessages: (messageIds: string[]) => set(state =>({
-        messages: state.messages.filter(m=> !messageIds.includes(m.id))
+        messages: state.messages
+            .filter(m=> !messageIds.includes(m.id))
+            .map(m => ({
+                ...m,
+                reply: m.reply&&messageIds.includes(m.reply)?null:m.reply
+            }))
     })),
     updateMessageContents: (id: string, value: string, replace: boolean) => set(state => ({
         messages: state.messages.map(m =>
