@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MdAdd, MdEdit, MdDeleteOutline, MdAccountCircle } from 'react-icons/md';
 import { BsLayoutSidebarReverse } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -6,7 +6,12 @@ import { aiModels, modelDetails } from '@/constants/models';
 import { useUserStore } from '@/stores/userStore';
 import '@/styles/Toolbar.css';
 import { useUiStore } from '@/stores/uiStore';
-import { createProfile, eliminateProfile, getProfiles } from '@/services/userService';
+import { 
+    createProfile, 
+    eliminateProfile, 
+    login
+} from '@/services/userService';
+
 
 const toolbar = () => {
     const  activeProfile = useUiStore((s) => s.activeProfile);
@@ -21,7 +26,6 @@ const toolbar = () => {
     const [toolbar, setToolbar] = useState<boolean>(false);
 
     const profiles = useUserStore((s) => s.profiles)
-    const setProfiles = useUserStore((s) => s.setProfiles)
     const addProfile = useUserStore((s) => s.addProfile)
     const deleteProfile = useUserStore((s) => s.deleteProfile)
     const token = useUserStore((s) => s.token);
@@ -37,7 +41,7 @@ const toolbar = () => {
 
     function handleLogin() {
         if(token) logout()
-        else window.location.href = 'http://localhost:3000/auth/google'
+        else login()
     }
 
     async function newProfile() {
@@ -56,33 +60,6 @@ const toolbar = () => {
         });
     }
 
-    async function fetchProfile() {
-        try {
-            const res = await fetch('http://localhost:3000/auth/me', {
-                method: 'GET',
-                credentials: 'include',
-            })
-            
-            if(res.status === 401) {
-                localStorage.setItem('logged', 'false');
-                reset();
-                return;
-            }
-            else if(res.status === 200) {
-                const data = await res.json();
-                localStorage.setItem('logged', 'true');
-                setToken(data.providerId);
-                setAvatar(data.avatar);
-                return;
-            }
-            console.warn(`Unexpected status: ${res.status}`);
-        }
-        catch (error) {
-            console.error('Profile fetch failed: ', error),
-            localStorage.setItem('logged', 'false');
-        }
-    }
-
     async function logout() {
         await fetch('http://localhost:3000/auth/logout', {
             method: 'GET',
@@ -94,21 +71,6 @@ const toolbar = () => {
         reset();
     }
 
-    useEffect(() => {
-      const loadProfile = async () => {
-        await fetchProfile();
-        const logged = localStorage.getItem('logged')==='true'
-        const savedProfiles = await getProfiles();
-        if (!logged || savedProfiles.length === 0) {
-          await newProfile();
-        }
-        else {
-            setProfiles(savedProfiles)
-        }
-      };
-
-      loadProfile();
-    }, []); 
 
     return (
         <div

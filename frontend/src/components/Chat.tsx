@@ -24,9 +24,8 @@ import '@/styles/Chat.css';
 import { useUiStore } from '@/stores/uiStore.ts';
 import { getChats, createChat } from '@/services/chatService.ts';
 import { deleteMessage, getMessagesFromChat, sendMessageToChat } from '@/services/messageService.ts';
-import { SiCucumber } from 'react-icons/si';
 
-const Chat = () => {
+const ChatArea = () => {
     const activeProfile = useUiStore((s) => s.activeProfile)
     const selectedModel = useUiStore((s) => s.selectedModel)
     const setForwardMenu = useUiStore((s) => s.setForwardMenu)
@@ -480,7 +479,6 @@ const Chat = () => {
                         {
                             chatsById[activeChat].messageIds.map(id => {
                                 const m: Message = messagesById[id]
-                                console.log(m)
                                 return !!m && (
                                     <div className="message-row" key={id}>
                                         <div
@@ -712,4 +710,4 @@ const Chat = () => {
     );
 };
 
-export default Chat;
+export default ChatArea;

@@ -4,13 +4,15 @@ import Settings from '@/components/Settings.tsx';
 import Topbar from '@/components/Topbar.tsx';
 import Toolbar from '@/components/Toolbar.tsx';
 import Forward from '@/components/Forward.tsx';
-import Chat from '@/components/Chat.tsx';
+import ChatArea from '@/components/Chat';
 import Welcome from '@/components/Welcome.tsx';
 import Notification from '@/components/Notification';
 
 import { useEffect } from 'react'
 import '../styles/App.css'
 import { useUiStore } from '@/stores/uiStore';
+import { createProfile, fetchUser, getProfiles } from '@/services/userService';
+import { useUserStore } from '@/stores/userStore';
 
 function App() {
     // Local data
@@ -19,7 +21,15 @@ function App() {
 
     const settings = useUiStore((s) => s.settings);
     const setSettings = useUiStore((s) => s.setSettings);
+    const backendStatus = useUiStore((s) => s.backendStatus);
+    const setActiveProfile = useUiStore((s) => s.setActiveProfile);
+    const setBackendStatus = useUiStore((s) => s.setBackendStatus);
     
+    const addProfile = useUserStore((s) => s.addProfile)
+    const setProfiles = useUserStore((s) => s.setProfiles)
+    const setToken = useUserStore((s) => s.setToken)
+    const setAvatar = useUserStore((s) => s.setAvatar)
+
     // Event listeners
     useEffect(() => {
         const handleMouseUp = (e: MouseEvent) => {
@@ -38,6 +48,41 @@ function App() {
 
     }, [editingProfile, settings])
 
+    useEffect(() => {
+      const loadProfile = async () => {
+        const res = await fetchUser();
+        setBackendStatus(res.status)
+
+        const savedProfiles = res.data ? await getProfiles() : [];
+        if (!res.data || savedProfiles.length === 0) {
+            const newProfile = await createProfile(localStorage.getItem('logged')==='true');
+            addProfile(newProfile)
+            setActiveProfile(newProfile.id)
+        }
+        else {
+            setAvatar(res.data.avatar)
+            setToken(res.data.providerId)
+            setProfiles(savedProfiles)
+        }
+      };
+
+      loadProfile();
+    }, []); 
+
+    if(backendStatus==='loading') {
+        return (
+            <div>
+                Loading...
+            </div>
+        )
+    }
+    if(backendStatus==='down') {
+        return (
+            <div>
+                Backend down ...
+            </div>
+        )
+    }
     return (
         <>  
             { /* WARNINGS */ }
@@ -60,7 +105,7 @@ function App() {
                 className="main"
             >
                 <Topbar/>
-                <Chat/>
+                <ChatArea/>
 
             </div>
 

@@ -32,6 +32,8 @@ type uiStoreType = {
     addTab: (t:string) => void,
     globalNotifications: Notification[];
     addNotification: (n: Notification) => void,
+    backendStatus: 'down' | 'loading' | 'ready',
+    setBackendStatus: (s: 'down' | 'loading' | 'ready') => void,
 }
 
 const getDefaultUiState = () => ({
@@ -79,8 +81,9 @@ export const useUiStore = create<uiStoreType>()(
             globalNotifications: [],
             addNotification: (n : Notification) => set((state) => ({
                 globalNotifications: [...state.globalNotifications, n],
-            }))
-
+            })),
+            backendStatus: 'loading',
+            setBackendStatus: (s: 'loading' | 'ready' | 'down') => set({ backendStatus: s })
         }),
         {
           name: "uiStore",

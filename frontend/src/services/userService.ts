@@ -78,3 +78,44 @@ export async function modifyProfile(profile: Profile) : Promise<Profile | undefi
         console.log('failed')
     }
 }
+
+export async function fetchUser() {
+    let status : 'down' | 'ready'  | 'loading' = 'down'
+    let resData = null
+    
+    try {
+        const res = await fetch('http://localhost:3000/auth/me', {
+            method: 'GET',
+            credentials: 'include',
+        })
+        
+        if(res.status === 401) {
+            localStorage.setItem('logged', 'false');
+            status = 'ready';
+        }
+        else if(res.status === 200) {
+            const data = await res.json();
+            localStorage.setItem('logged', 'true');
+            status = 'ready'
+            resData = data;
+        }
+        else {
+            status = 'down'
+            console.warn(`Unexpected status: ${res.status}`);
+        }
+    }
+    catch (error) {
+        localStorage.setItem('logged', 'false');
+        status = 'down'
+    }
+
+    return {
+        status: status,
+        data: resData
+    }
+}
+
+export async function login() {
+    window.location.href = 'http://localhost:3000/auth/google'
+}
+
