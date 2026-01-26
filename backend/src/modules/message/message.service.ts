@@ -19,4 +19,7 @@ export class MessageService {
       chat: chat,
     }).exec()
   }
+  async deleteById(user: string, msg: string) {
+    return await this.messageModel.deleteOne({ user: user, _id: msg })
+  }
 }

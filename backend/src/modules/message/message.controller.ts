@@ -13,6 +13,16 @@ export class MessageController {
     private readonly chatService: ChatService
   ) {}
 
+  @Delete()
+  @UseGuards(AuthGuard('jwt'))
+  async delete(
+    @Req() req: Request & { user: { id: string }},
+    @Param() id: string,
+  ) {
+    const success = await this.messageService.deleteById(req.user.id, id)
+    return { success: !!success.deletedCount };
+  }
+
   @Post()
   @UseGuards(AuthGuard('jwt'))
   async create(

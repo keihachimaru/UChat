@@ -37,3 +37,14 @@ export async function sendMessageToChat(id: string, message: Message) {
         } 
     }
 }
+
+export async function deleteMessage(id: string) {
+    const res = await fetch(`http://localhost:3000/message/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+    })
+    if(res.ok) {
+        const { success } = await res.json();
+        return success;
+    }
+}

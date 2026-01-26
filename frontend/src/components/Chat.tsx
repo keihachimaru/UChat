@@ -23,7 +23,8 @@ import type { Rag, Message, Chat } from '@/types/index.ts';
 import '@/styles/Chat.css';
 import { useUiStore } from '@/stores/uiStore.ts';
 import { getChats, createChat } from '@/services/chatService.ts';
-import { getMessagesFromChat, sendMessageToChat } from '@/services/messageService.ts';
+import { deleteMessage, getMessagesFromChat, sendMessageToChat } from '@/services/messageService.ts';
+import { SiCucumber } from 'react-icons/si';
 
 const Chat = () => {
     const activeProfile = useUiStore((s) => s.activeProfile)
@@ -384,8 +385,11 @@ const Chat = () => {
         setEditingMessage(null)
     }
 
-    function handleDeleteMessage() {
+    async function handleDeleteMessage() {
         if(!activeChat) return
+        const success = await deleteMessage(messageMenuId);
+        if(!success) return
+
         deleteMessages([messageMenuId]);
         deleteMessageFromChat(activeChat, messageMenuId)
 
