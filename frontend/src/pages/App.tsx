@@ -79,7 +79,7 @@ function App() {
     if(backendStatus==='down') {
         return (
             <div
-                className="main"
+                className="maina"
             >
                 <h1>Backend down ...</h1>
             </div>
