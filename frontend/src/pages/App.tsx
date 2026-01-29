@@ -15,6 +15,7 @@ import '../styles/App.css'
 import { useUiStore } from '@/stores/uiStore';
 import { createProfile, fetchUser, getProfiles } from '@/services/userService';
 import { useUserStore } from '@/stores/userStore';
+import { useChatStore } from '@/stores/chatStores';
 
 function App() {
     // Local data
@@ -27,6 +28,8 @@ function App() {
     const setActiveProfile = useUiStore((s) => s.setActiveProfile);
     const setBackendStatus = useUiStore((s) => s.setBackendStatus);
     const activeProfile = useUiStore((s) => s.activeProfile)
+    
+    const chats = useChatStore((s) => s.chats)
     
     const addProfile = useUserStore((s) => s.addProfile)
     const setProfiles = useUserStore((s) => s.setProfiles)
@@ -74,7 +77,7 @@ function App() {
         }
       };
 
-      loadProfile();
+      setTimeout(() => { loadProfile() }, 1000)
     }, []); 
 
     if(backendStatus==='loading') {

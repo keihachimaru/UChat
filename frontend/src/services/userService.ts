@@ -9,7 +9,7 @@ export async function createProfile(isLoggedIn: boolean) {
         temperature: 1.0,
         stream: true,
         maxTokens: 100,
-        autoReply: false,
+        autoReply: true,
     }
     if(!isLoggedIn) {
         newProfile.id = generateID().toString();

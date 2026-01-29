@@ -124,6 +124,9 @@ const ChatArea = () => {
 
     useEffect(() => {
         if(!token) {
+            const raw = localStorage.getItem('chats');
+            const data = raw ? JSON.parse(raw) : null;
+            if (data) setChats(data);
             return
         }
         
@@ -136,6 +139,7 @@ const ChatArea = () => {
         load();
     }, [ token ])
     
+
     useEffect(() => {
         if(!activeChat) return
         const chat = chatsById[activeChat];
@@ -187,24 +191,27 @@ const ChatArea = () => {
 
         const profile = profilesById[activeProfile!];
 
-        if (profile.autoReply) triggerAIReply();
+        if (profile.autoReply) triggerAIReply(message);
     }
 
     function handleStreamChunk(chunk: string, replyId: string) {
         const lines = chunk.split("\n");
+        let res = ""
 
         for (const line of lines) {
             if (!line.startsWith("data: ")) continue;
 
             const data = line.replace("data: ", "").trim();
-            if (data === "[DONE]") return;
+            if (data === "[DONE]") return res 
 
             const json = JSON.parse(data);
             const token = json.choices?.[0]?.delta?.content;
             if (!token) continue;
             
             updateMessageContents(replyId, token, false)
+            res += token
         }
+        return res
     }
 
     function stopGeneration() {
@@ -217,16 +224,17 @@ const ChatArea = () => {
         setCancelable(false);
     }
 
-    async function triggerAIReply() {
+    async function triggerAIReply(m? : Message) {
         setThinking(true)
         if (messages.length === 0 || !selectedModel) return;
         const model = selectedModel
-        const messagesArray = [messages[messages.length - 1]]
+        const messagesArray = m?[m]:[messages[messages.length - 1]]
 
         const conversation = messagesArray.map(m => ({
             "role": m.system ? "system" : "user",
             "content": m.content
         }))
+
         const temperature = profilesById[activeProfile!].temperature
         const maxTokens = profilesById[activeProfile!].maxTokens || 100
         const stream = profilesById[activeProfile!].stream
@@ -279,6 +287,7 @@ const ChatArea = () => {
             setThinking(false);
 
             let done = false;
+            let content = ''
             while (!done) {
                 if(abortRef.current?.signal.aborted) break;
                 
@@ -286,9 +295,11 @@ const ChatArea = () => {
                 done = doneReading;
 
                 const chunk = decoder.decode(value, { stream: true });
-                handleStreamChunk(chunk, reply.id);
+                content += handleStreamChunk(chunk, reply.id);
             }
+            console.log(content)
             readerRef.current = null;
+            await sendMessageToChat(activeChat!.toString(), { ...reply, content: content });
         }
         else {
             const reply: Message = {
@@ -304,6 +315,8 @@ const ChatArea = () => {
             addMessage(reply)
             addMessageToChat(activeChat!, reply.id)
             setThinking(false);
+
+            await sendMessageToChat(activeChat!.toString(), reply);
         }
     }
 

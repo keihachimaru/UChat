@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { BsLayoutSidebar } from 'react-icons/bs';
 import { 
     MdOutlineMoreHoriz, 
@@ -173,6 +173,12 @@ const Sidebar = () => {
         chatMenuRef.current = null;
         setChatMenuId('');
     }
+
+    useEffect(() => {
+      if (localStorage.getItem('logged') !== 'true' && chats.length) {
+        localStorage.setItem('chats', JSON.stringify(chats));
+      }
+    }, [chats]);
 
     return (
     <div className={["sidebar", showSidebar?"":"hidden"].join(" ")}>

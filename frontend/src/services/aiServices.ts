@@ -14,6 +14,7 @@ export async function sendMessageToAI(
   key: string, 
   signal?: AbortSignal
 ) {
+  console.log('hi')
   switch(request.model) {
     case 'deepseek':
       return handleDeepseek(request, key, signal)
