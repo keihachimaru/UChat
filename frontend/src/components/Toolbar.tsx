@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MdAdd, MdEdit, MdDeleteOutline, MdAccountCircle } from 'react-icons/md';
 import { BsLayoutSidebarReverse } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -76,6 +76,12 @@ const toolbar = () => {
         setProfiles([]);
         setChats([])
     }
+
+    useEffect(()=>{
+      if (localStorage.getItem('logged') !== 'true' && profiles.length) {
+        localStorage.setItem('profiles', JSON.stringify(profiles));
+      }
+    }, [profiles])
 
 
     return (

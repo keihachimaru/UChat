@@ -57,15 +57,20 @@ function App() {
         const res = await fetchUser();
         setBackendStatus(res.status)
 
-        const savedProfiles = res.data ? await getProfiles() : [];
-        if (!res.data || savedProfiles.length === 0) {
+        const localProfiles = JSON.parse(localStorage.getItem('profiles')||'[]');
+        const savedProfiles = res.data ? await getProfiles() : localProfiles;
+        
+
+        if (savedProfiles.length === 0) {
             const newProfile = await createProfile(localStorage.getItem('logged')==='true');
             addProfile(newProfile)
             setActiveProfile(newProfile.id)
         }
         else {
-            setAvatar(res.data.avatar)
-            setToken(res.data.providerId)
+            if(res.data) {
+                setAvatar(res.data.avatar)
+                setToken(res.data.providerId)
+            }
             setProfiles(savedProfiles)
             if(activeProfile &&
                 !savedProfiles.find((p: { id: string}) => p.id===activeProfile)

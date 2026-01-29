@@ -2,6 +2,8 @@ import { generateID } from "@/utils/general";
 import type { Chat } from '@/types/index';
 
 export async function getChats() {
+    if(localStorage.getItem('logged')!=='true') return []
+
     const res = await fetch('http://localhost:3000/chat/all', {
         method: 'GET',
         credentials: 'include',
@@ -57,6 +59,7 @@ export async function createChat(isLoggedIn: boolean, name: string) {
 }
 
 export async function deleteChatById(id: string) {
+    if(localStorage.getItem('logged')!=='true') return true
     const res = await fetch('http://localhost:3000/chat/delete/'+id, {
         method: 'DELETE',
         credentials: 'include',
@@ -66,6 +69,7 @@ export async function deleteChatById(id: string) {
 }
 
 export async function saveChatName(id: string, value: string) {
+    if(localStorage.getItem('logged')!=='true') return true
     const res = await fetch('http://localhost:3000/chat/rename/'+id, {
         method: 'PATCH',
         credentials: 'include',
@@ -83,6 +87,7 @@ export async function saveChatName(id: string, value: string) {
 }
 
 export async function pinChat(id: string) {
+    if(localStorage.getItem('logged')!=='true') return true
     const res = await fetch(`http://localhost:3000/chat/pin/${id}`, {
         method: 'PATCH',
         credentials: 'include',

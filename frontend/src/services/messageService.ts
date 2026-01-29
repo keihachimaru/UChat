@@ -21,6 +21,7 @@ export async function getMessagesFromChat(id: string) {
 }
 
 export async function sendMessageToChat(id: string, message: Message) {
+    if(localStorage.getItem('logged')!=='true') return message
     const res = await fetch(`http://localhost:3000/message`, {
         method: 'POST',
         credentials: 'include',

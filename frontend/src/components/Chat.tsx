@@ -108,6 +108,10 @@ const ChatArea = () => {
                 behavior: 'smooth',
             });
         }
+
+        if (localStorage.getItem('logged') !== 'true' && messages.length) {
+          localStorage.setItem('messages', JSON.stringify(messages));
+        }
     }, [messages, thinking])
 
     useEffect(() => {
@@ -153,6 +157,12 @@ const ChatArea = () => {
             load();
         }
     }, [ activeChat, chats ])
+    
+    useEffect(() => {
+        if(localStorage.getItem('logged')!=='true') {
+            setMessages(JSON.parse(localStorage.getItem('messages') || '[]'))
+        }
+    }, [])
 
     async function newChat(
         chatName?: string,
@@ -254,7 +264,7 @@ const ChatArea = () => {
             setThinking(false);
             addNotification({ 
                 type: 'error',
-                message: `No API key set for ${model}!`
+                message: `No API key set for ${model}!`,
             })
             return
         }
