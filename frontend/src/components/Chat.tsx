@@ -238,7 +238,7 @@ const ChatArea = () => {
         setThinking(true)
         if (messages.length === 0 || !selectedModel) return;
         const model = selectedModel
-        const messagesArray = m?[m]:[messages[messages.length - 1]]
+        const messagesArray = m?[...messages, m]:messages//[messages[messages.length - 1]]
 
         const conversation = messagesArray.map(m => ({
             "role": m.system ? "system" : "user",
