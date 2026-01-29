@@ -1,10 +1,11 @@
 import { generateID } from "@/utils/general";
 import type { Chat } from '@/types/index';
+import { API } from "./api";
 
 export async function getChats() {
     if(localStorage.getItem('logged')!=='true') return []
 
-    const res = await fetch('http://localhost:3000/chat/all', {
+    const res = await fetch(API+'/chat/all', {
         method: 'GET',
         credentials: 'include',
     })
@@ -34,7 +35,7 @@ export async function createChat(isLoggedIn: boolean, name: string) {
         } 
     }
     else {
-        const res = await fetch('http://localhost:3000/chat', {
+        const res = await fetch(API+'/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ export async function createChat(isLoggedIn: boolean, name: string) {
 
 export async function deleteChatById(id: string) {
     if(localStorage.getItem('logged')!=='true') return true
-    const res = await fetch('http://localhost:3000/chat/delete/'+id, {
+    const res = await fetch(API+'/chat/delete/'+id, {
         method: 'DELETE',
         credentials: 'include',
     })
@@ -70,7 +71,7 @@ export async function deleteChatById(id: string) {
 
 export async function saveChatName(id: string, value: string) {
     if(localStorage.getItem('logged')!=='true') return true
-    const res = await fetch('http://localhost:3000/chat/rename/'+id, {
+    const res = await fetch(API+'/chat/rename/'+id, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -88,7 +89,7 @@ export async function saveChatName(id: string, value: string) {
 
 export async function pinChat(id: string) {
     if(localStorage.getItem('logged')!=='true') return true
-    const res = await fetch(`http://localhost:3000/chat/pin/${id}`, {
+    const res = await fetch(API+'/chat/pin/'+id, {
         method: 'PATCH',
         credentials: 'include',
     })

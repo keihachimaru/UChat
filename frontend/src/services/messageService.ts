@@ -1,7 +1,8 @@
 import type { Message, Chat } from '@/types'
+import { API } from './api';
 
 export async function getMessagesFromChat(id: string) {
-    const res = await fetch(`http://localhost:3000/chat/${id}/messages`, {
+    const res = await fetch(API + `/chat/${id}/messages`, {
         method: 'GET',
         credentials: 'include'
     })
@@ -22,7 +23,7 @@ export async function getMessagesFromChat(id: string) {
 
 export async function sendMessageToChat(id: string, message: Message) {
     if(localStorage.getItem('logged')!=='true') return message
-    const res = await fetch(`http://localhost:3000/message`, {
+    const res = await fetch(API + `/message`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -48,7 +49,7 @@ export async function sendMessageToChat(id: string, message: Message) {
 }
 
 export async function deleteMessage(id: string) {
-    const res = await fetch(`http://localhost:3000/message/${id}`, {
+    const res = await fetch(API + `/message/${id}`, {
         method: 'DELETE',
         credentials: 'include',
     })

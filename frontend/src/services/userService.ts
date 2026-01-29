@@ -1,5 +1,6 @@
 import type { Profile } from '@/types/index';
 import { generateID, randomHex } from '@/utils/general';
+import { API } from './api';
 
 export async function createProfile(isLoggedIn: boolean) {
     const newProfile = {
@@ -16,7 +17,7 @@ export async function createProfile(isLoggedIn: boolean) {
         return newProfile;
     }
     else {
-        const res = await fetch('http://localhost:3000/profile', {
+        const res = await fetch(API+'/profile', {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -37,7 +38,7 @@ export async function createProfile(isLoggedIn: boolean) {
 }
 
 export async function getProfiles() {
-    const res = await fetch('http://localhost:3000/profile/me', {
+    const res = await fetch(API+'/profile/me', {
         method: 'GET',
         credentials: 'include',
     })
@@ -51,7 +52,7 @@ export async function getProfiles() {
 }
 
 export async function eliminateProfile(id: string) {
-    const res = await fetch(`http://localhost:3000/profile/${id}`, {
+    const res = await fetch(API+'/profile/'+id, {
         method: 'DELETE',
         credentials: 'include'
     })
@@ -61,7 +62,7 @@ export async function eliminateProfile(id: string) {
 }
 
 export async function modifyProfile(profile: Profile) : Promise<Profile | undefined> {
-    const res = await fetch(`http://localhost:3000/profile/${profile.id}`, {
+    const res = await fetch(API+'/profile/'+profile.id, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -84,7 +85,7 @@ export async function fetchUser() {
     let resData = null
     
     try {
-        const res = await fetch('http://localhost:3000/auth/me', {
+        const res = await fetch(API+'/auth/me', {
             method: 'GET',
             credentials: 'include',
         })
@@ -116,6 +117,6 @@ export async function fetchUser() {
 }
 
 export async function login() {
-    window.location.href = 'http://localhost:3000/auth/google'
+    window.location.href = API + '/auth/google'
 }
 

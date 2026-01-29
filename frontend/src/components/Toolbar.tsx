@@ -12,7 +12,7 @@ import {
     login
 } from '@/services/userService';
 import { useChatStore } from '@/stores/chatStores';
-
+import { API } from '@/services/api';
 
 const toolbar = () => {
     const  activeProfile = useUiStore((s) => s.activeProfile);
@@ -65,7 +65,7 @@ const toolbar = () => {
     }
 
     async function logout() {
-        await fetch('http://localhost:3000/auth/logout', {
+        await fetch(API + 'auth/logout', {
             method: 'GET',
             credentials: 'include',
         })
