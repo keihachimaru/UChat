@@ -7,6 +7,8 @@ import Forward from '@/components/Forward.tsx';
 import ChatArea from '@/components/Chat';
 import Welcome from '@/components/Welcome.tsx';
 import Notification from '@/components/Notification';
+import Loading from '@/components/Loading';
+import BackendDown from '@/components/BackendDown';
 
 import { useEffect } from 'react'
 import '../styles/App.css'
@@ -71,18 +73,16 @@ function App() {
 
     if(backendStatus==='loading') {
         return (
-            <div>
-                Loading...
-            </div>
+            <>
+                <Loading/>
+            </>
         )
     }
     if(backendStatus==='down') {
         return (
-            <div
-                className="maina"
-            >
-                <h1>Backend down ...</h1>
-            </div>
+            <>
+                <BackendDown/>
+            </>
         )
     }
     return (
