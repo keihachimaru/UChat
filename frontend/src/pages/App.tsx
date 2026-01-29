@@ -26,6 +26,7 @@ function App() {
     const backendStatus = useUiStore((s) => s.backendStatus);
     const setActiveProfile = useUiStore((s) => s.setActiveProfile);
     const setBackendStatus = useUiStore((s) => s.setBackendStatus);
+    const activeProfile = useUiStore((s) => s.activeProfile)
     
     const addProfile = useUserStore((s) => s.addProfile)
     const setProfiles = useUserStore((s) => s.setProfiles)
@@ -65,6 +66,11 @@ function App() {
             setAvatar(res.data.avatar)
             setToken(res.data.providerId)
             setProfiles(savedProfiles)
+            if(activeProfile &&
+                !savedProfiles.find((p: { id: string}) => p.id===activeProfile)
+            ) {
+                setActiveProfile(savedProfiles[0].id || null)
+            }
         }
       };
 

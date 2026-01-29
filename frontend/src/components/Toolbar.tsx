@@ -11,6 +11,7 @@ import {
     eliminateProfile, 
     login
 } from '@/services/userService';
+import { useChatStore } from '@/stores/chatStores';
 
 
 const toolbar = () => {
@@ -28,10 +29,13 @@ const toolbar = () => {
     const profiles = useUserStore((s) => s.profiles)
     const addProfile = useUserStore((s) => s.addProfile)
     const deleteProfile = useUserStore((s) => s.deleteProfile)
+    const setProfiles = useUserStore((s) => s.setProfiles)
     const token = useUserStore((s) => s.token);
     const setToken = useUserStore((s) => s.setToken);
     const avatar = useUserStore((s) => s.avatar);
     const setAvatar = useUserStore((s) => s.setAvatar);
+
+    const setChats = useChatStore((s) => s.setChats);
 
     async function handleDeleteProfile(id: string) {
         if (activeProfile === id) setActiveProfile(null)
@@ -69,6 +73,8 @@ const toolbar = () => {
         setToken('');
         setAvatar(null);
         reset();
+        setProfiles([]);
+        setChats([])
     }
 
 

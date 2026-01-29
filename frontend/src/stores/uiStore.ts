@@ -45,6 +45,8 @@ const getDefaultUiState = () => ({
     forwarding: null,
     forwardMenu: false,
     replying: null,
+    tabs: [],
+    profiles: [],
 });
 
 export const useUiStore = create<uiStoreType>()(

@@ -1,5 +1,5 @@
 .topbar {
-    background: #222;
+    background: #191919;
     width: calc(100% - 40px) !important;
     height: 60px;
     display: flex;
@@ -22,12 +22,13 @@
     user-select: none;
     justify-content: space-between;
     position: relative;
-    min-width: 30px;
+    overflow: hidden;
 }
 .tabName {
     min-width: 0;
     text-wrap: ellipsis;
     overflow: hidden;
+    text-wrap: nowrap;
 }
 .tab:hover {
     border-color: #272727;
@@ -43,4 +44,7 @@
 .tab.active .close {
     opacity: 1;
     cursor: pointer;
+}
+.close {
+    flex-shrink: 0;
 }
