@@ -24,7 +24,7 @@ const toolbar = () => {
     const  setEditingProfile = useUiStore((s) => s.setEditingProfile);
     const reset = useUiStore((s) => s.reset);
 
-    const [toolbar, setToolbar] = useState<boolean>(false);
+    const [toolbar, setToolbar] = useState<boolean>(true);
 
     const profiles = useUserStore((s) => s.profiles)
     const addProfile = useUserStore((s) => s.addProfile)

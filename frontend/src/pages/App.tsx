@@ -29,8 +29,6 @@ function App() {
     const setBackendStatus = useUiStore((s) => s.setBackendStatus);
     const activeProfile = useUiStore((s) => s.activeProfile)
     
-    const chats = useChatStore((s) => s.chats)
-    
     const addProfile = useUserStore((s) => s.addProfile)
     const setProfiles = useUserStore((s) => s.setProfiles)
     const setToken = useUserStore((s) => s.setToken)

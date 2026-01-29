@@ -14,7 +14,7 @@ const Settings = () => {
 
     function saveKeys() {
         for (const model of aiModels) {
-            localStorage.setItem(model, modelsDetails.find(m => m.name === model)!.key || '')
+            sessionStorage.setItem(model, modelsDetails.find(m => m.name === model)!.key || '')
         }
     }
 
@@ -22,7 +22,7 @@ const Settings = () => {
         setModelsDetails(aiModels.map(m => modelDetails[m]));
 
         for (const model of aiModels) {
-            const key = localStorage.getItem(model)
+            const key = sessionStorage.getItem(model)
             if (key) {
                 setModelKey(model, key)
             }
