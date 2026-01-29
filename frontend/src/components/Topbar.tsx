@@ -9,7 +9,6 @@ const Topbar = () => {
     const activeChat = useUiStore((s) => s.activeChat);
     const setActiveChat = useUiStore((s) => s.setActiveChat);
     const tabs = useUiStore((s) => s.tabs);
-    const setTabs = useUiStore((s) => s.setTabs);
     const addTab = useUiStore((s) => s.addTab);
     const removeTab = useUiStore((s) => s.removeTab);
     

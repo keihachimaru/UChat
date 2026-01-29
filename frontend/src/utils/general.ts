@@ -8,10 +8,11 @@ export function createChat(
     chatName: string,
 ) : Chat {
     return {
-        id: generateID(),
+        id: generateID().toString(),
         name: chatName,
         messageIds: [],
         documentIds: [],
+        pinned: false
     } 
 }
 export function capitalize(val: string) {

@@ -15,7 +15,6 @@ import '../styles/App.css'
 import { useUiStore } from '@/stores/uiStore';
 import { createProfile, fetchUser, getProfiles } from '@/services/userService';
 import { useUserStore } from '@/stores/userStore';
-import { useChatStore } from '@/stores/chatStores';
 
 function App() {
     // Local data
