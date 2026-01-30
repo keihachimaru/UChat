@@ -17,7 +17,7 @@ const Welcome = () => {
             <div className="welcome-contents">
                 Hi, in order to have your data saved you should
                 <a 
-                    href={API + "auth/google"}
+                    href={API + "/auth/google"}
                     style={{ marginLeft: '5px', display: 'inline-block' }}
                 >login</a>
             </div>
