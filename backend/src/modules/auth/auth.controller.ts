@@ -23,7 +23,17 @@ export class AuthController {
       path: '/',
     })
 
-    res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173');
+    //res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173');
+
+    res.send(`
+      <html>
+        <body>
+          <script>
+            window.location.href = "${process.env.FRONTEND_URL}";
+          </script>
+        </body>
+      </html>
+    `);
   }
 
   @UseGuards(AuthGuard('jwt'))
