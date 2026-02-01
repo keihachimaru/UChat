@@ -14,7 +14,7 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleCallback(@Req() req, @Res() res) {
     const jwt = await this.authService.login(req.user);
-
+    console.log('Generated JWT');
     res.cookie('jwt', jwt, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
