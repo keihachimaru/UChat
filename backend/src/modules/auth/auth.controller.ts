@@ -17,9 +17,9 @@ export class AuthController {
     console.log('Generated JWT');
     res.cookie('jwt', jwt, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
+      sameSite: 'none',
       path: '/',
       domain: 'uchat-production.up.railway.app'
     })
