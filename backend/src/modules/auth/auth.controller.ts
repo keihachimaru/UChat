@@ -21,7 +21,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: 'none',
       path: '/',
-      domain: 'uchat-production.up.railway.app'
+      domain: '.up.railway.app'
     })
 
     res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173');
