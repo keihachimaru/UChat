@@ -19,7 +19,7 @@ export class AuthController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+      sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none'
     })
 
     res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173');
@@ -45,7 +45,7 @@ export class AuthController {
     res.clearCookie('jwt', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
     });
 
     return res.status(200).json({ message: 'Logged out' });
