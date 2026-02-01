@@ -20,7 +20,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
-      domain: '.up.railway.app',
+      path: '/',
     })
 
     res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173');
