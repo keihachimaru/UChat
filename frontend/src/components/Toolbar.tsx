@@ -65,7 +65,7 @@ const toolbar = () => {
     }
 
     async function logout() {
-        await fetch(API + 'auth/logout', {
+        await fetch(API + '/auth/logout', {
             method: 'GET',
             credentials: 'include',
         })
