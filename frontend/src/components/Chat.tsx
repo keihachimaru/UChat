@@ -259,12 +259,12 @@ const ChatArea = () => {
             rag: context
         }
 
-        const key = modelsDetails.find(m => m.name === model)!.key
+        const key = modelsDetails.find(m => m.name === model)!.key;
         if (!key) {
             setThinking(false);
             addNotification({ 
                 type: 'error',
-                message: `No API key set for ${model}!`,
+                message: `No API key set for ${model}! Press the settings in the bottom right corner to set it up.`,
             })
             return
         }
