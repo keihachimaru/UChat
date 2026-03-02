@@ -12,7 +12,7 @@ UChat is a full-stack chat application that lets you interact with multiple AI m
 
 ## Key Features
 
-### 🗨️ Core Chat System
+### Core Chat System
 
 - **Create, rename, and delete chats** - Organize conversations easily
 - **Persistent local storage** - Chat history survives browser restarts
@@ -20,14 +20,14 @@ UChat is a full-stack chat application that lets you interact with multiple AI m
 - **Chat pinning** - Keep frequently-used conversations at the top
 - **Deterministic message ordering** - Messages always display in the correct sequence
 
-### 🤖 Multi-Model Support
+### Multi-Model Support
 
 - **Dual AI models** - Chat with DeepSeek or Google Gemini
 - **Per-chat model selection** - Choose different models for different conversations
 - **User-supplied API keys** - Use your own credentials for each model
 - **Streaming responses** - Real-time message streaming for faster feedback
 
-### 👤 Profile Management
+### Profile Management
 
 - **Multiple profiles** - Create and switch between different chat personas
 - **Profile customization** - Set custom colors, temperature, and token limits for each profile
@@ -35,7 +35,7 @@ UChat is a full-stack chat application that lets you interact with multiple AI m
 - **Authentication support** - Sync profiles across devices with Google OAuth
 - **Local fallback** - Use profiles offline without authentication
 
-### ✏️ Advanced Message Controls
+### Advanced Message Controls
 
 - **Pin messages** - Keep important messages visible at the top
 - **Edit sent messages** - Correct or modify your chat history
@@ -43,21 +43,21 @@ UChat is a full-stack chat application that lets you interact with multiple AI m
 - **Reply-to functionality** - Quote specific messages in conversations
 - **Message deletion** - Remove messages from chat history
 
-### 🔐 Authentication & Multi-Device Support
+### Authentication & Multi-Device Support
 
 - **Google OAuth integration** - Sign in with your Google account
 - **JWT token-based sessions** - Secure, stateless authentication
 - **Cross-device synchronization** - Access your chats and profiles from any device
 - **Guest mode** - Chat without logging in (local storage only)
 
-### ⚙️ User Configuration
+### User Configuration
 
 - **Temperature control** - Adjust model creativity per profile (0.0 to 2.0)
 - **Token limits** - Set maximum tokens for each response
 - **Streaming toggle** - Enable/disable real-time response streaming
 - **Model-specific settings** - Fine-tune parameters per AI assistant
 
-### 🎨 UI/UX Features
+### UI/UX Features
 
 - **Clean interface** - Intuitive navigation with sidebar and toolbars
 - **Responsive design** - Works on desktop and tablet screens

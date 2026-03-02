@@ -23,8 +23,8 @@ export class AuthController {
       path: '/',
       domain: '.up.railway.app'
     })
-
-    res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/auth-success?token=${jwt}`);
   }
 
   @UseGuards(AuthGuard('jwt'))

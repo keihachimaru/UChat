@@ -13,6 +13,7 @@ const AuthSuccess = () => {
 
     return (
         <>
+            Hi
         </>
     )
 }
