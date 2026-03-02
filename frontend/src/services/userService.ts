@@ -19,9 +19,9 @@ export async function createProfile(isLoggedIn: boolean) {
     else {
         const res = await fetch(API+'/profile', {
             method: 'POST',
-            credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
             },
             body: JSON.stringify(newProfile)
         })
@@ -40,7 +40,9 @@ export async function createProfile(isLoggedIn: boolean) {
 export async function getProfiles() {
     const res = await fetch(API+'/profile/me', {
         method: 'GET',
-        credentials: 'include',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        },
     })
 
     if(res.ok) {
@@ -54,7 +56,9 @@ export async function getProfiles() {
 export async function eliminateProfile(id: string) {
     const res = await fetch(API+'/profile/'+id, {
         method: 'DELETE',
-        credentials: 'include'
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        },
     })
     const { success } = await res.json();
     console.log(success)
@@ -67,6 +71,7 @@ export async function modifyProfile(profile: Profile) : Promise<Profile | undefi
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
         },
         body: JSON.stringify(profile)
     })
@@ -87,7 +92,9 @@ export async function fetchUser() {
     try {
         const res = await fetch(API+'/auth/me', {
             method: 'GET',
-            credentials: 'include',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+            },
         })
         
         if(res.status === 401) {

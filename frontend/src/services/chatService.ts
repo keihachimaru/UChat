@@ -6,8 +6,10 @@ export async function getChats() {
     if(localStorage.getItem('logged')!=='true') return []
 
     const res = await fetch(API+'/chat/all', {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        },
         method: 'GET',
-        credentials: 'include',
     })
     if(res.status === 200) {
         const data = await res.json();
@@ -39,8 +41,8 @@ export async function createChat(isLoggedIn: boolean, name: string) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
             },
-            credentials: 'include',
             body: JSON.stringify({ name })
         })
         if(res.ok) {
@@ -62,8 +64,10 @@ export async function createChat(isLoggedIn: boolean, name: string) {
 export async function deleteChatById(id: string) {
     if(localStorage.getItem('logged')!=='true') return true
     const res = await fetch(API+'/chat/delete/'+id, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        },
         method: 'DELETE',
-        credentials: 'include',
     })
     const { success } = await res.json();
     return success;
@@ -73,9 +77,9 @@ export async function saveChatName(id: string, value: string) {
     if(localStorage.getItem('logged')!=='true') return true
     const res = await fetch(API+'/chat/rename/'+id, {
         method: 'PATCH',
-        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
         },
         body: JSON.stringify({ value })
     })
@@ -90,8 +94,10 @@ export async function saveChatName(id: string, value: string) {
 export async function pinChat(id: string) {
     if(localStorage.getItem('logged')!=='true') return true
     const res = await fetch(API+'/chat/pin/'+id, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        },
         method: 'PATCH',
-        credentials: 'include',
     })
 
     if(!res.ok) console.error('Failed to pin chat');

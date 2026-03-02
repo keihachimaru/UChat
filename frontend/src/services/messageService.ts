@@ -4,7 +4,9 @@ import { API } from './api';
 export async function getMessagesFromChat(id: string) {
     const res = await fetch(API + `/chat/${id}/messages`, {
         method: 'GET',
-        credentials: 'include'
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        },
     })
     if(res.ok) {
         const data = await res.json();
@@ -25,9 +27,9 @@ export async function sendMessageToChat(id: string, message: Message) {
     if(localStorage.getItem('logged')!=='true') return message
     const res = await fetch(API + `/message`, {
         method: 'POST',
-        credentials: 'include',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
         },
         body: JSON.stringify({ 
             chat: id,
@@ -51,7 +53,9 @@ export async function sendMessageToChat(id: string, message: Message) {
 export async function deleteMessage(id: string) {
     const res = await fetch(API + `/message/${id}`, {
         method: 'DELETE',
-        credentials: 'include',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+        },
     })
     if(res.ok) {
         const { success } = await res.json();
