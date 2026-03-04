@@ -61,7 +61,6 @@ export async function eliminateProfile(id: string) {
         },
     })
     const { success } = await res.json();
-    console.log(success)
     return success;
 }
 
@@ -77,7 +76,6 @@ export async function modifyProfile(profile: Profile) : Promise<Profile | undefi
     })
     if(res.ok) {
         const data = await res.json();
-        console.log(data)
         return { ...data, id: data._id };
     }
     else {

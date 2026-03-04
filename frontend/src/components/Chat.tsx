@@ -307,7 +307,6 @@ const ChatArea = () => {
                 const chunk = decoder.decode(value, { stream: true });
                 content += handleStreamChunk(chunk, reply.id);
             }
-            console.log(content)
             readerRef.current = null;
             await sendMessageToChat(activeChat!.toString(), { ...reply, content: content });
         }

@@ -14,7 +14,6 @@ export async function sendMessageToAI(
   key: string, 
   signal?: AbortSignal
 ) {
-  console.log('hi')
   switch(request.model) {
     case 'deepseek':
       return handleDeepseek(request, key, signal)
@@ -32,7 +31,6 @@ export async function handleDeepseek(
 ) {
     if (request.rag?.length) {
         // context = await calculateRAG(rag);
-        console.log(request.rag)
     }
 
     const res = await fetchDeepSeek({
@@ -84,7 +82,7 @@ export async function handleGemini(
   
   // If you want to support RAG later:
   if (request.rag?.length) {
-    console.log(request.rag);
+    (request.rag);
     // context = await calculateRAG(request.rag);
   }
 
